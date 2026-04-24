@@ -1,0 +1,2639 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Дорога Победы</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── THEME TOKENS ── */
+:root {
+  /* Zone palette — refined from original */
+  --z1-light: #B8D4F0; --z1-mid: #1A5FA5; --z1-dark: #042C53; --z1-bg: #E8F1FB;
+  --z2-light: #C8C6F2; --z2-mid: #4A44B0; --z2-dark: #22205A; --z2-bg: #EEEDFE;
+  --z3-light: #F2C0B0; --z3-mid: #962E18; --z3-dark: #4A1B0C; --z3-bg: #FAEAE5;
+  --z4-light: #BCE09A; --z4-mid: #3A6C10; --z4-dark: #163404; --z4-bg: #E9F3DC;
+  --z5-light: #FAC878; --z5-mid: #834E0A; --z5-dark: #3F2400; --z5-bg: #FAEED8;
+  --correct-bg: #E9F3DC; --correct-border: #96C259; --correct-text: #163404;
+  --wrong-bg: #FCEBEB; --wrong-border: #F09090; --wrong-text: #501313;
+  --radius: 10px; --radius-sm: 6px;
+}
+
+/* ── DARK THEME (default) ── */
+[data-theme="dark"] {
+  --bg: #0f0d0b;
+  --bg2: #1a1710;
+  --bg3: #231e16;
+  --surface: #26211a;
+  --surface2: #302a22;
+  --border: #3a332a;
+  --border-light: #4a4035;
+  --text: #f0e8d8;
+  --text-muted: #8a7a68;
+  --text-dim: #5a4e40;
+  --gold: #c8973a;
+  --gold-light: #e8b84a;
+  --gold-dark: #9a7028;
+  --red: #b83228;
+  --heading-font: 'Oswald', sans-serif;
+  --body-font: 'Lora', Georgia, serif;
+}
+
+/* ── LIGHT THEME ── */
+[data-theme="light"] {
+  --bg: #f5f0e8;
+  --bg2: #ede7da;
+  --bg3: #e5dece;
+  --surface: #ffffff;
+  --surface2: #f7f2ea;
+  --border: #d8cebe;
+  --border-light: #e5dece;
+  --text: #1a1410;
+  --text-muted: #6a5a48;
+  --text-dim: #a8988a;
+  --gold: #9a6e1a;
+  --gold-light: #b88a28;
+  --gold-dark: #7a5212;
+  --red: #b83228;
+  --heading-font: 'Oswald', sans-serif;
+  --body-font: 'Lora', Georgia, serif;
+}
+
+body {
+  font-family: var(--body-font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── HEADER ── */
+header {
+  background: var(--bg2);
+  border-bottom: 3px solid var(--red);
+  padding: 0 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 72px;
+}
+header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -60deg, transparent, transparent 24px,
+    rgba(200,151,58,0.04) 24px, rgba(200,151,58,0.04) 25px
+  );
+  pointer-events: none;
+}
+.header-star-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.header-star {
+  width: 16px; height: 16px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+header h1 {
+  font-family: var(--heading-font);
+  font-size: clamp(20px, 3vw, 30px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+  position: relative;
+  flex: 1;
+}
+header h1 span {
+  color: var(--gold);
+}
+.header-sub {
+  font-family: var(--body-font);
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  position: relative;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── MENU SCREEN ── */
+.menu-wrap {
+  min-height: calc(100vh - 72px);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+@media (max-width: 720px) {
+  .menu-wrap { grid-template-columns: 1fr; }
+  .menu-poster { display: none; }
+}
+.menu-poster {
+  position: relative;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 40px;
+}
+.menu-poster-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+}
+.menu-poster-title {
+  font-family: var(--heading-font);
+  font-size: clamp(28px, 3vw, 48px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.05;
+  margin-top: 24px;
+  color: var(--text);
+}
+.menu-poster-title em {
+  display: block;
+  color: var(--gold);
+  font-style: normal;
+  font-size: 1.2em;
+}
+.menu-poster-sub {
+  font-family: var(--body-font);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 12px;
+  letter-spacing: 0.04em;
+}
+.menu-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+}
+.menu-inner {
+  width: 100%;
+  max-width: 440px;
+}
+.menu-title-block {
+  margin-bottom: 28px;
+}
+.menu-title-block h2 {
+  font-family: var(--heading-font);
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  line-height: 1.1;
+}
+.menu-title-block h2 em {
+  color: var(--gold);
+  font-style: normal;
+}
+.menu-title-block p {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+.menu-btns {
+  display: grid;
+  gap: 14px;
+}
+.menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 28px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, transform 0.12s, box-shadow 0.12s;
+  position: relative;
+  overflow: hidden;
+}
+.menu-btn::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--gold);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.menu-btn:hover { transform: translateY(-2px); border-color: var(--gold); box-shadow: 0 8px 24px rgba(0,0,0,0.25); }
+.menu-btn:hover::before { opacity: 1; }
+.menu-ico-wrap {
+  width: 56px; height: 56px;
+  border-radius: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.menu-text { flex: 1; }
+.menu-text strong {
+  display: block;
+  font-family: var(--heading-font);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.menu-text span {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+.menu-arrow {
+  font-size: 20px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.menu-btn:hover .menu-arrow { color: var(--gold); }
+
+/* ── SETUP SCREEN ── */
+.setup-wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 32px 20px 60px;
+}
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--heading-font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.12s;
+  text-decoration: none;
+}
+.back-link:hover { color: var(--gold); }
+
+.section-title {
+  font-family: var(--heading-font);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+.section-title span { color: var(--gold); }
+
+.count-picker {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.count-btn {
+  flex: 1;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-family: var(--heading-font);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.count-btn:hover { border-color: var(--gold); color: var(--text); }
+.count-btn.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+
+.player-rows { display: grid; gap: 10px; margin-bottom: 24px; }
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.player-num {
+  font-family: var(--heading-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  min-width: 30px;
+}
+.token-pick { display: flex; gap: 4px; }
+.token-pick button {
+  width: 40px; height: 40px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg3);
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.token-pick button:hover:not(:disabled) { border-color: var(--gold); transform: scale(1.08); }
+.token-pick button.active { border-color: var(--gold); background: var(--surface2); box-shadow: 0 0 0 2px var(--gold); }
+.token-pick button:disabled { opacity: 0.2; cursor: not-allowed; }
+
+.player-row input {
+  flex: 1;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--body-font);
+  font-size: 15px;
+  background: var(--bg3);
+  color: var(--text);
+}
+.player-row input:focus {
+  outline: none;
+  border-color: var(--gold);
+  background: var(--surface);
+}
+
+.primary-btn {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--gold);
+  color: #fff;
+  font-family: var(--heading-font);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.primary-btn:hover:not(:disabled) { background: var(--gold-light); transform: translateY(-1px); }
+.primary-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.primary-btn.outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.primary-btn.outline:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); background: transparent; transform: none; }
+
+/* ── GAME SCREEN ── */
+.game-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+}
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.score-card {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  transition: border-color 0.2s;
+}
+.score-card.current { border-color: var(--gold); }
+.score-card .s-tok { font-size: 22px; }
+.score-card .s-name {
+  font-family: var(--heading-font);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.score-card .s-stat { font-size: 11px; color: var(--text-muted); }
+.score-card .s-body { flex: 1; min-width: 0; }
+
+.turn-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 16px;
+  margin-bottom: 12px;
+  font-family: var(--heading-font);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.turn-banner .t-tok { font-size: 20px; }
+.turn-banner strong { color: var(--gold); }
+
+/* ── BOARD ── */
+.board-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  position: relative;
+}
+.board-outer {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.board {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap: 2px;
+  aspect-ratio: 1/1;
+  width: 100%;
+  position: relative;
+}
+.cell {
+  position: relative;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: transform 0.1s;
+}
+.cell .num {
+  font-family: var(--heading-font);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0em;
+  color: rgba(0,0,0,0.38);
+  position: absolute;
+  top: 3px;
+  left: 0; right: 0;
+  text-align: center;
+  z-index: 2;
+  line-height: 1;
+}
+[data-theme="dark"] .cell .num { color: rgba(255,255,255,0.28); }
+
+.cell.zone-1 { background: var(--z1-bg); border: 1px solid var(--z1-light); }
+.cell.zone-2 { background: var(--z2-bg); border: 1px solid var(--z2-light); }
+.cell.zone-3 { background: var(--z3-bg); border: 1px solid var(--z3-light); }
+.cell.zone-4 { background: var(--z4-bg); border: 1px solid var(--z4-light); }
+.cell.zone-5 { background: var(--z5-bg); border: 1px solid var(--z5-light); }
+
+.cell.event {
+  background: #1a1410 !important;
+  border: 1.5px solid #c8973a !important;
+}
+.cell.event::before {
+  content: '⚡';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; color: #c8973a; opacity: 1;
+}
+.cell.finish {
+  background: linear-gradient(135deg, #c8973a 0%, #9a7028 100%) !important;
+  border: 2px solid #e8b84a !important;
+  box-shadow: 0 0 12px rgba(200,151,58,0.6) !important;
+}
+.cell.finish::before {
+  content: 'БЕРЛИН';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px;
+  font-family: var(--heading-font);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+.cell.finish::after {
+  content: '★';
+  position: absolute;
+  top: 1px; right: 3px;
+  font-size: 9px;
+  color: #fff;
+  opacity: 0.9;
+  z-index: 5;
+}
+.cell.start {
+  background: #1a1410 !important;
+  border: 1.5px solid #c8973a !important;
+}
+.cell.start::before {
+  content: 'СТАРТ';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 7px;
+  font-family: var(--heading-font);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #c8973a;
+}
+
+/* Зонные разделители */
+.zone-divider {
+  position: absolute;
+  left: -4px; right: -4px;
+  height: 3px;
+  z-index: 15;
+  pointer-events: none;
+  border-radius: 2px;
+}
+.zone-label-badge {
+  position: absolute;
+  right: -90px;
+  width: 82px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-family: var(--heading-font);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+  pointer-events: none;
+  line-height: 1.3;
+  transform: translateY(-50%);
+}
+@media (max-width: 720px) {
+  .zone-label-badge { display: none; }
+}
+
+.tokens-on-cell {
+  position: absolute;
+  inset: 0; z-index: 3;
+  display: flex; flex-wrap: wrap;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+  padding: 2px;
+}
+.token-chip {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  border: 2px solid rgba(255,255,255,0.7);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.25);
+  background: #888;
+  flex-shrink: 0;
+}
+.token-chip[data-player="0"] { background: #c0392b; }
+.token-chip[data-player="1"] { background: #1a6faa; }
+.token-chip[data-player="2"] { background: #27a660; }
+.token-chip[data-player="3"] { background: #c8973a; }
+
+/* ── DICE PANEL ── */
+.dice-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.dice {
+  width: 76px; height: 76px;
+  background: var(--bg2);
+  color: var(--gold);
+  border-radius: 12px;
+  border: 2px solid var(--border-light);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--heading-font);
+  font-size: 46px;
+  font-weight: 700;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.3);
+  user-select: none;
+  transition: border-color 0.2s;
+}
+.dice.rolling { animation: diceRoll 0.55s ease; border-color: var(--gold); }
+@keyframes diceRoll {
+  0%   { transform: rotate(0deg) scale(1); }
+  20%  { transform: rotate(90deg) scale(0.88); }
+  50%  { transform: rotate(200deg) scale(1.06); }
+  75%  { transform: rotate(300deg) scale(0.92); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.roll-btn {
+  padding: 14px 32px;
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-sm);
+  background: var(--gold);
+  color: #fff;
+  font-family: var(--heading-font);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.roll-btn:hover:not(:disabled) { background: var(--gold-light); border-color: var(--gold-light); }
+.roll-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.dice-info {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  font-family: var(--heading-font);
+  letter-spacing: 0.04em;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+
+/* ── MODAL ── */
+.modal-bg {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  backdrop-filter: blur(3px);
+}
+.modal-bg.active { display: flex; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-width: 560px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-head {
+  padding: 20px 24px 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.modal-head.z1 { background: var(--z1-dark); }
+.modal-head.z2 { background: var(--z2-dark); }
+.modal-head.z3 { background: var(--z3-dark); }
+.modal-head.z4 { background: var(--z4-dark); }
+.modal-head.z5 { background: var(--z5-dark); }
+
+.modal-num {
+  font-family: var(--heading-font);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+}
+.modal-zone-name {
+  font-size: 12px;
+  font-style: italic;
+  margin-top: 2px;
+  color: rgba(255,255,255,0.65);
+}
+.modal-player-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  font-family: var(--heading-font);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.modal-body { padding: 22px; }
+.mq-diff {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-family: var(--heading-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.diff-easy  { background: var(--correct-bg); color: #27500A; }
+.diff-med   { background: #FAEEDA; color: #633806; }
+.diff-hard  { background: var(--wrong-bg); color: #791F1F; }
+
+.mq-question {
+  font-family: var(--heading-font);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin-bottom: 18px;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.mq-opts { display: grid; gap: 8px; }
+.mq-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+  user-select: none;
+  transition: all 0.12s;
+  color: var(--text);
+}
+.mq-opt:not(.locked):hover { border-color: var(--gold); background: var(--surface2); }
+.mq-opt.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+.mq-opt.wrong   { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+.mq-opt.reveal  { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+.mq-letter {
+  font-weight: 700;
+  font-family: var(--heading-font);
+  font-size: 14px;
+  min-width: 20px;
+  color: var(--gold);
+}
+.mq-opt.correct .mq-letter,
+.mq-opt.wrong .mq-letter,
+.mq-opt.reveal .mq-letter { color: inherit; }
+
+.mq-fact {
+  display: none;
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--gold);
+  background: var(--bg3);
+  font-size: 13px;
+  line-height: 1.65;
+  font-style: italic;
+  color: var(--text-muted);
+}
+.mq-fact.visible { display: block; }
+.mq-fact strong {
+  color: var(--gold);
+  font-style: normal;
+  font-family: var(--heading-font);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-size: 10px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.mq-result {
+  display: none;
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  font-family: var(--heading-font);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.mq-result.visible { display: block; }
+.mq-result.ok  { background: var(--correct-bg); color: var(--correct-text); border: 1px solid var(--correct-border); }
+.mq-result.no  { background: var(--wrong-bg); color: var(--wrong-text); border: 1px solid var(--wrong-border); }
+
+.mq-next { margin-top: 14px; display: none; }
+.mq-next.visible { display: block; }
+
+/* ── EVENT MODAL ── */
+.event-modal .modal-head {
+  background: #1a1410;
+  border-bottom: 1px solid rgba(200,151,58,0.2);
+}
+.event-modal .modal-num { color: var(--gold); }
+.event-icon { font-size: 64px; text-align: center; margin: 16px 0 10px; }
+.event-name {
+  font-family: var(--heading-font);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.event-effect {
+  text-align: center;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.event-effect.pos { color: #3B6D11; }
+.event-effect.neg { color: #A32D2D; }
+
+/* ── WIN SCREEN ── */
+.win-wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 48px 20px 60px;
+  text-align: center;
+}
+.win-emblem {
+  width: 110px; height: 110px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, #e8b84a, #c8973a);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--heading-font);
+  font-size: 48px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 0 0 6px var(--bg2), 0 0 0 9px var(--gold), 0 8px 32px rgba(200,151,58,0.4);
+}
+.win-title {
+  font-family: var(--heading-font);
+  font-size: clamp(22px, 3.5vw, 36px);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.win-title span { color: var(--gold); }
+.win-sub {
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 36px;
+  font-size: 14px;
+}
+
+/* Подиум */
+.win-podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  height: 140px;
+}
+.podium-place {
+  flex: 1;
+  max-width: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+.podium-player-token {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  margin-bottom: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+  border: 3px solid rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.podium-name {
+  font-family: var(--heading-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin-bottom: 4px;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+.podium-stat {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-align: center;
+}
+.podium-block {
+  width: 100%;
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--heading-font);
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+.podium-place.p1 .podium-block { height: 80px; background: linear-gradient(180deg,#e8b84a,#c8973a); }
+.podium-place.p2 .podium-block { height: 56px; background: linear-gradient(180deg,#a0a8b0,#7a848c); }
+.podium-place.p3 .podium-block { height: 40px; background: linear-gradient(180deg,#c8874a,#9a6230); }
+
+.win-stats {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.win-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.win-row:last-child { border-bottom: none; }
+.win-row .wr-tok {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.win-row .wr-name {
+  font-family: var(--heading-font);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  flex: 1;
+}
+.win-row .wr-stat { font-size: 12px; color: var(--text-muted); }
+.win-row .wr-rank {
+  font-family: var(--heading-font);
+  font-size: 18px;
+  font-weight: 700;
+  width: 28px;
+  text-align: center;
+  color: var(--text-dim);
+}
+.win-row.winner .wr-name { color: var(--gold); }
+.win-row.winner .wr-rank { color: var(--gold); }
+.win-btns { display: grid; gap: 10px; }
+
+/* ── QUIZ MODE ── */
+.zone-nav {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.zone-nav::-webkit-scrollbar { display: none; }
+.zone-tab {
+  flex: 1;
+  min-width: 110px;
+  padding: 13px 8px 11px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--heading-font);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  text-align: center;
+  line-height: 1.4;
+}
+.zone-tab:hover { background: var(--bg3); color: var(--text); }
+.zone-tab.active { color: var(--text); font-weight: 600; }
+.zone-tab[data-zone="1"].active { border-color: var(--z1-mid); }
+.zone-tab[data-zone="2"].active { border-color: var(--z2-mid); }
+.zone-tab[data-zone="3"].active { border-color: var(--z3-mid); }
+.zone-tab[data-zone="4"].active { border-color: var(--z4-mid); }
+.zone-tab[data-zone="5"].active { border-color: var(--z5-mid); }
+.zone-tab .tab-num { font-size: 10px; opacity: 0.55; display: block; font-weight: 400; }
+.zone-tab .tab-name { display: block; }
+
+.quiz-main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+.zone-panel { display: none; }
+.zone-panel.active { display: block; }
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+}
+.zone-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.zone-header h2 {
+  font-family: var(--heading-font);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.zone-header p { font-size: 12px; margin-top: 3px; opacity: 0.7; font-style: italic; }
+
+.z1 .zone-header { background: var(--z1-bg); }
+.z1 .zone-icon  { background: var(--z1-light); color: var(--z1-dark); }
+.z1 .zone-header h2 { color: var(--z1-dark); }
+.z2 .zone-header { background: var(--z2-bg); }
+.z2 .zone-icon  { background: var(--z2-light); color: var(--z2-dark); }
+.z2 .zone-header h2 { color: var(--z2-dark); }
+.z3 .zone-header { background: var(--z3-bg); }
+.z3 .zone-icon  { background: var(--z3-light); color: var(--z3-dark); }
+.z3 .zone-header h2 { color: var(--z3-dark); }
+.z4 .zone-header { background: var(--z4-bg); }
+.z4 .zone-icon  { background: var(--z4-light); color: var(--z4-dark); }
+.z4 .zone-header h2 { color: var(--z4-dark); }
+.z5 .zone-header { background: var(--z5-bg); }
+.z5 .zone-icon  { background: var(--z5-light); color: var(--z5-dark); }
+.z5 .zone-header h2 { color: var(--z5-dark); }
+
+.progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.progress-track { flex: 1; height: 4px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.z1 .progress-fill { background: var(--z1-mid); }
+.z2 .progress-fill { background: var(--z2-mid); }
+.z3 .progress-fill { background: var(--z3-mid); }
+.z4 .progress-fill { background: var(--z4-mid); }
+.z5 .progress-fill { background: var(--z5-mid); }
+.progress-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-family: var(--heading-font);
+  letter-spacing: 0.04em;
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+}
+.card-head {
+  padding: 16px 20px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.z1 .card-head { background: var(--z1-dark); }
+.z2 .card-head { background: var(--z2-dark); }
+.z3 .card-head { background: var(--z3-dark); }
+.z4 .card-head { background: var(--z4-dark); }
+.z5 .card-head { background: var(--z5-dark); }
+
+.card-num {
+  font-family: var(--heading-font);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+.diff-badge {
+  font-size: 10px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-family: var(--heading-font);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  margin-top: 6px;
+}
+
+.card-body { padding: 20px; }
+.question {
+  font-family: var(--heading-font);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 18px;
+}
+.options { display: grid; gap: 8px; margin-bottom: 14px; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  cursor: pointer;
+  transition: all 0.12s;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text);
+  user-select: none;
+}
+.option:not(.answered):hover { border-color: var(--gold); }
+.z1 .option:not(.answered):hover { background: var(--z1-bg); border-color: var(--z1-mid); }
+.z2 .option:not(.answered):hover { background: var(--z2-bg); border-color: var(--z2-mid); }
+.z3 .option:not(.answered):hover { background: var(--z3-bg); border-color: var(--z3-mid); }
+.z4 .option:not(.answered):hover { background: var(--z4-bg); border-color: var(--z4-mid); }
+.z5 .option:not(.answered):hover { background: var(--z5-bg); border-color: var(--z5-mid); }
+.option.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+.option.wrong   { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+.option.reveal-correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); }
+.opt-letter {
+  font-weight: 700;
+  font-family: var(--heading-font);
+  font-size: 14px;
+  min-width: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--gold);
+}
+.option.correct .opt-letter,
+.option.wrong .opt-letter,
+.option.reveal-correct .opt-letter { color: inherit; }
+
+.reveal-btn {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-family: var(--heading-font);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.reveal-btn:hover { background: var(--bg3); color: var(--text); border-color: var(--gold); }
+
+.fact-box {
+  display: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-top: 14px;
+  border-left: 3px solid;
+}
+.fact-box.visible { display: block; }
+.z1 .fact-box { background: var(--z1-bg); border-color: var(--z1-mid); }
+.z2 .fact-box { background: var(--z2-bg); border-color: var(--z2-mid); }
+.z3 .fact-box { background: var(--z3-bg); border-color: var(--z3-mid); }
+.z4 .fact-box { background: var(--z4-bg); border-color: var(--z4-mid); }
+.z5 .fact-box { background: var(--z5-bg); border-color: var(--z5-mid); }
+.fact-label {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--heading-font);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.z1 .fact-label { color: var(--z1-mid); }
+.z2 .fact-label { color: var(--z2-mid); }
+.z3 .fact-label { color: var(--z3-mid); }
+.z4 .fact-label { color: var(--z4-mid); }
+.z5 .fact-label { color: var(--z5-mid); }
+.fact-text { font-size: 13px; line-height: 1.65; color: var(--text-muted); font-style: italic; }
+
+.nav-row { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; gap: 8px; }
+.nav-btn {
+  padding: 9px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-family: var(--heading-font);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.nav-btn:hover:not(:disabled) { border-color: var(--gold); color: var(--gold); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+.jump-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 20px; justify-content: center; }
+.jump-btn {
+  width: 34px; height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--heading-font);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.1s;
+}
+.jump-btn:hover { border-color: var(--gold); color: var(--text); }
+.jump-btn.j-current { font-weight: 700; color: var(--text); border-color: var(--gold); background: var(--bg3); }
+.z1 .jump-btn.j-current { background: var(--z1-bg); border-color: var(--z1-mid); color: var(--z1-dark); }
+.z2 .jump-btn.j-current { background: var(--z2-bg); border-color: var(--z2-mid); color: var(--z2-dark); }
+.z3 .jump-btn.j-current { background: var(--z3-bg); border-color: var(--z3-mid); color: var(--z3-dark); }
+.z4 .jump-btn.j-current { background: var(--z4-bg); border-color: var(--z4-mid); color: var(--z4-dark); }
+.z5 .jump-btn.j-current { background: var(--z5-bg); border-color: var(--z5-mid); color: var(--z5-dark); }
+.jump-btn.j-correct { background: var(--correct-bg); border-color: var(--correct-border); color: #3B6D11; }
+.jump-btn.j-wrong   { background: var(--wrong-bg); border-color: var(--wrong-border); color: #A32D2D; }
+
+.score-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.score-chip {
+  font-size: 11px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--heading-font);
+  letter-spacing: 0.03em;
+}
+.score-chip strong { color: var(--text); }
+
+/* ── ZONE LEGEND (game) ── */
+.zone-legend {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.legend-item {
+  flex: 1;
+  min-width: 80px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-family: var(--heading-font);
+  letter-spacing: 0.04em;
+  text-align: center;
+  font-weight: 600;
+}
+.legend-item.z1 { background: var(--z1-bg); color: var(--z1-dark); border: 1px solid var(--z1-light); }
+.legend-item.z2 { background: var(--z2-bg); color: var(--z2-dark); border: 1px solid var(--z2-light); }
+.legend-item.z3 { background: var(--z3-bg); color: var(--z3-dark); border: 1px solid var(--z3-light); }
+.legend-item.z4 { background: var(--z4-bg); color: var(--z4-dark); border: 1px solid var(--z4-light); }
+.legend-item.z5 { background: var(--z5-bg); color: var(--z5-dark); border: 1px solid var(--z5-light); }
+
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 11px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  font-family: var(--heading-font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── MOBILE ── */
+@media (max-width: 520px) {
+  header { height: 60px; }
+  .zone-tab { min-width: 88px; font-size: 10px; padding: 11px 5px 9px; }
+  .cell { font-size: 7px; padding: 1px 2px; }
+  .cell.event::before { font-size: 12px; }
+  .cell.finish::before { font-size: 16px; }
+  .token-chip { font-size: 11px; }
+  .dice { width: 64px; height: 64px; font-size: 38px; }
+  .menu-btn { padding: 18px 20px; gap: 14px; }
+  .menu-ico-wrap { width: 48px; height: 48px; font-size: 22px; }
+  .zone-legend { display: none; }
+  header h1 { font-size: 18px; }
+  .header-sub { display: none; }
+}
+</style>
+</head>
+<body data-theme="dark">
+<script>document.body.setAttribute('data-theme', 'dark');</script>
+
+<!-- HEADER -->
+<header>
+  <div class="header-star-row">
+    <div class="header-star"></div>
+    <div class="header-star"></div>
+    <div class="header-star"></div>
+  </div>
+  <h1>Дорога <span>Победы</span></h1>
+  <div class="header-sub" id="headerSub">100 карточек · 5 битв · 1941–1945</div>
+</header>
+
+<!-- ЭКРАН 1: МЕНЮ -->
+<div class="screen active" id="screen-menu">
+  <div class="menu-wrap">
+
+    <!-- ЛЕВАЯ ПАНЕЛЬ — ПЛАКАТ -->
+    <div class="menu-poster">
+      <!-- Советская звезда с лучами -->
+      <svg class="menu-poster-svg" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Лучи -->
+        <g opacity="0.12" stroke="currentColor" stroke-width="1">
+          <line x1="160" y1="160" x2="160" y2="0" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="300" y2="60" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="320" y2="200" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="240" y2="320" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="80" y2="320" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="0" y2="200" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="20" y2="60" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="160" y2="320" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="320" y2="160" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="0" y2="160" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="320" y2="80" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="0" y2="80" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="260" y2="320" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="60" y2="320" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="260" y2="0" stroke="#c8973a"/>
+          <line x1="160" y1="160" x2="60" y2="0" stroke="#c8973a"/>
+        </g>
+        <!-- Внешнее кольцо -->
+        <circle cx="160" cy="160" r="148" stroke="#c8973a" stroke-width="1" stroke-opacity="0.2"/>
+        <circle cx="160" cy="160" r="136" stroke="#c8973a" stroke-width="0.5" stroke-opacity="0.15"/>
+        <!-- Пятиконечная звезда -->
+        <polygon
+          points="160,28 190,116 284,116 210,170 236,258 160,204 84,258 110,170 36,116 130,116"
+          fill="#c8973a" fill-opacity="0.9"
+        />
+        <!-- Внутренняя звезда (тень) -->
+        <polygon
+          points="160,64 182,128 250,128 196,164 218,228 160,190 102,228 124,164 70,128 138,128"
+          fill="#9a7028" fill-opacity="0.4"
+        />
+        <!-- Лавровая ветвь слева (упрощённая) -->
+        <g stroke="#c8973a" stroke-width="1.5" stroke-opacity="0.5" fill="none">
+          <path d="M 52 240 Q 60 228 72 236"/>
+          <path d="M 60 252 Q 72 238 82 248"/>
+          <path d="M 68 264 Q 80 248 92 258"/>
+          <path d="M 52 240 Q 58 256 70 268"/>
+        </g>
+        <!-- Лавровая ветвь справа -->
+        <g stroke="#c8973a" stroke-width="1.5" stroke-opacity="0.5" fill="none">
+          <path d="M 268 240 Q 260 228 248 236"/>
+          <path d="M 260 252 Q 248 238 238 248"/>
+          <path d="M 252 264 Q 240 248 228 258"/>
+          <path d="M 268 240 Q 262 256 250 268"/>
+        </g>
+        <!-- Годы внизу -->
+        <text x="160" y="295" text-anchor="middle" font-family="Oswald, sans-serif" font-size="13" font-weight="600" letter-spacing="8" fill="#c8973a" fill-opacity="0.7">1941 — 1945</text>
+      </svg>
+
+      <div class="menu-poster-title">Дорога<em>Победы</em></div>
+      <div class="menu-poster-sub">Настольная игра-ходилка<br>100 карточек · 5 битв</div>
+    </div>
+
+    <!-- ПРАВАЯ ПАНЕЛЬ — КНОПКИ -->
+    <div class="menu-right">
+      <div class="menu-inner">
+        <div class="menu-title-block">
+          <h2>Выберите<br><em>режим</em></h2>
+          <p>Образовательная настольная игра о Великой Отечественной войне</p>
+        </div>
+        <div class="menu-btns">
+          <button class="menu-btn" onclick="goSetup()">
+            <div class="menu-ico-wrap">🎲</div>
+            <div class="menu-text">
+              <strong>Играть в ходилку</strong>
+              <span>2–4 игрока · бросай кубик · отвечай на вопросы · дойди до Берлина</span>
+            </div>
+            <span class="menu-arrow">→</span>
+          </button>
+          <button class="menu-btn" onclick="goQuiz()">
+            <div class="menu-ico-wrap">📖</div>
+            <div class="menu-text">
+              <strong>Учить вопросы</strong>
+              <span>100 карточек по 5 битвам · без игровой механики · для самоподготовки</span>
+            </div>
+            <span class="menu-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ЭКРАН 2: НАСТРОЙКА -->
+<div class="screen" id="screen-setup">
+  <div class="setup-wrap">
+    <a class="back-link" onclick="goMenu()">← В меню</a>
+    <div class="section-title">Количество <span>игроков</span></div>
+    <div class="count-picker" id="countPicker">
+      <button class="count-btn" data-count="2">2</button>
+      <button class="count-btn active" data-count="3">3</button>
+      <button class="count-btn" data-count="4">4</button>
+    </div>
+    <div class="section-title">Имена и <span>фишки</span></div>
+    <div class="player-rows" id="playerRows"></div>
+    <button class="primary-btn" onclick="startGame()">Начать игру →</button>
+  </div>
+</div>
+
+<!-- ЭКРАН 3: ИГРА -->
+<div class="screen" id="screen-game">
+  <div class="game-wrap">
+    <a class="back-link" onclick="confirmQuit()">← В меню</a>
+    <div class="scoreboard" id="scoreboard"></div>
+    <div class="turn-banner" id="turnBanner"></div>
+    <div class="zone-legend">
+      <div class="legend-item z1">1–20 Москва</div>
+      <div class="legend-item z2">21–40 Ленинград</div>
+      <div class="legend-item z3">41–60 Сталинград</div>
+      <div class="legend-item z4">61–80 Курск</div>
+      <div class="legend-item z5">81–100 Берлин</div>
+    </div>
+    <div class="board-wrap">
+      <div class="board-outer">
+        <div class="board" id="board"></div>
+      </div>
+    </div>
+    <div class="dice-panel">
+      <div class="dice" id="dice">?</div>
+      <div>
+        <button class="roll-btn" id="rollBtn" onclick="rollDice()">Бросить кубик</button>
+        <div class="dice-info" id="diceInfo">Бросай кубик!</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН 4: ПОБЕДА -->
+<div class="screen" id="screen-win">
+  <div class="win-wrap">
+    <div class="win-emblem">★</div>
+    <div class="win-title" id="winTitle"></div>
+    <div class="win-sub">Берлин взят — война окончена!</div>
+    <div class="win-podium" id="winPodium"></div>
+    <div class="win-stats" id="winStats"></div>
+    <div class="win-btns">
+      <button class="primary-btn" onclick="goSetup()">Новая игра</button>
+      <button class="primary-btn outline" onclick="goMenu()">В меню</button>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН 5: ВИКТОРИНА -->
+<div class="screen" id="screen-quiz">
+  <a class="back-link" style="display:block; max-width:680px; margin:12px auto -4px; padding:0 16px;" onclick="goMenu()">← В меню</a>
+  <nav class="zone-nav">
+    <button class="zone-tab active" data-zone="1" onclick="switchZone(1)"><span class="tab-num">1–20</span><span class="tab-name">Москва</span></button>
+    <button class="zone-tab" data-zone="2" onclick="switchZone(2)"><span class="tab-num">21–40</span><span class="tab-name">Ленинград</span></button>
+    <button class="zone-tab" data-zone="3" onclick="switchZone(3)"><span class="tab-num">41–60</span><span class="tab-name">Сталинград</span></button>
+    <button class="zone-tab" data-zone="4" onclick="switchZone(4)"><span class="tab-num">61–80</span><span class="tab-name">Курск</span></button>
+    <button class="zone-tab" data-zone="5" onclick="switchZone(5)"><span class="tab-num">81–100</span><span class="tab-name">Берлин</span></button>
+  </nav>
+  <div class="quiz-main">
+    <div class="zone-panel z1 active" id="zone1">
+      <div class="zone-header"><div class="zone-icon">❄</div><div><h2>Битва за Москву</h2><p>1941–1942 · Карточки №1–20</p></div></div>
+      <div class="score-bar" id="score1"></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" id="prog1" style="width:5%"></div></div><span class="progress-label" id="plabel1">1 / 20</span></div>
+      <div class="card" id="card1"><div class="card-head"><div class="card-num" id="cnum1"></div><span class="diff-badge" id="diff1"></span></div><div class="card-body"><div class="question" id="q1"></div><div class="options" id="opts1"></div><button class="reveal-btn" id="rev1" onclick="reveal(1)">Показать правильный ответ</button><div class="fact-box" id="fact1"><div class="fact-label">Факт</div><div class="fact-text" id="ft1"></div></div></div></div>
+      <div class="nav-row"><button class="nav-btn" id="prev1" onclick="qnav(1,-1)" disabled>← Назад</button><button class="nav-btn" id="next1" onclick="qnav(1,1)">Вперёд →</button></div>
+      <div class="jump-grid" id="jump1"></div>
+    </div>
+    <div class="zone-panel z2" id="zone2">
+      <div class="zone-header"><div class="zone-icon">🧊</div><div><h2>Оборона Ленинграда</h2><p>1941–1944 · Карточки №21–40</p></div></div>
+      <div class="score-bar" id="score2"></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" id="prog2" style="width:5%"></div></div><span class="progress-label" id="plabel2">1 / 20</span></div>
+      <div class="card" id="card2"><div class="card-head"><div class="card-num" id="cnum2"></div><span class="diff-badge" id="diff2"></span></div><div class="card-body"><div class="question" id="q2"></div><div class="options" id="opts2"></div><button class="reveal-btn" id="rev2" onclick="reveal(2)">Показать правильный ответ</button><div class="fact-box" id="fact2"><div class="fact-label">Факт</div><div class="fact-text" id="ft2"></div></div></div></div>
+      <div class="nav-row"><button class="nav-btn" id="prev2" onclick="qnav(2,-1)" disabled>← Назад</button><button class="nav-btn" id="next2" onclick="qnav(2,1)">Вперёд →</button></div>
+      <div class="jump-grid" id="jump2"></div>
+    </div>
+    <div class="zone-panel z3" id="zone3">
+      <div class="zone-header"><div class="zone-icon">🔥</div><div><h2>Сталинградская битва</h2><p>1942–1943 · Карточки №41–60</p></div></div>
+      <div class="score-bar" id="score3"></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" id="prog3" style="width:5%"></div></div><span class="progress-label" id="plabel3">1 / 20</span></div>
+      <div class="card" id="card3"><div class="card-head"><div class="card-num" id="cnum3"></div><span class="diff-badge" id="diff3"></span></div><div class="card-body"><div class="question" id="q3"></div><div class="options" id="opts3"></div><button class="reveal-btn" id="rev3" onclick="reveal(3)">Показать правильный ответ</button><div class="fact-box" id="fact3"><div class="fact-label">Факт</div><div class="fact-text" id="ft3"></div></div></div></div>
+      <div class="nav-row"><button class="nav-btn" id="prev3" onclick="qnav(3,-1)" disabled>← Назад</button><button class="nav-btn" id="next3" onclick="qnav(3,1)">Вперёд →</button></div>
+      <div class="jump-grid" id="jump3"></div>
+    </div>
+    <div class="zone-panel z4" id="zone4">
+      <div class="zone-header"><div class="zone-icon">⚙</div><div><h2>Курская битва</h2><p>1943 · Карточки №61–80</p></div></div>
+      <div class="score-bar" id="score4"></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" id="prog4" style="width:5%"></div></div><span class="progress-label" id="plabel4">1 / 20</span></div>
+      <div class="card" id="card4"><div class="card-head"><div class="card-num" id="cnum4"></div><span class="diff-badge" id="diff4"></span></div><div class="card-body"><div class="question" id="q4"></div><div class="options" id="opts4"></div><button class="reveal-btn" id="rev4" onclick="reveal(4)">Показать правильный ответ</button><div class="fact-box" id="fact4"><div class="fact-label">Факт</div><div class="fact-text" id="ft4"></div></div></div></div>
+      <div class="nav-row"><button class="nav-btn" id="prev4" onclick="qnav(4,-1)" disabled>← Назад</button><button class="nav-btn" id="next4" onclick="qnav(4,1)">Вперёд →</button></div>
+      <div class="jump-grid" id="jump4"></div>
+    </div>
+    <div class="zone-panel z5" id="zone5">
+      <div class="zone-header"><div class="zone-icon">★</div><div><h2>Взятие Берлина</h2><p>1945 · Карточки №81–100</p></div></div>
+      <div class="score-bar" id="score5"></div>
+      <div class="progress-row"><div class="progress-track"><div class="progress-fill" id="prog5" style="width:5%"></div></div><span class="progress-label" id="plabel5">1 / 20</span></div>
+      <div class="card" id="card5"><div class="card-head"><div class="card-num" id="cnum5"></div><span class="diff-badge" id="diff5"></span></div><div class="card-body"><div class="question" id="q5"></div><div class="options" id="opts5"></div><button class="reveal-btn" id="rev5" onclick="reveal(5)">Показать правильный ответ</button><div class="fact-box" id="fact5"><div class="fact-label">Факт</div><div class="fact-text" id="ft5"></div></div></div></div>
+      <div class="nav-row"><button class="nav-btn" id="prev5" onclick="qnav(5,-1)" disabled>← Назад</button><button class="nav-btn" id="next5" onclick="qnav(5,1)">Вперёд →</button></div>
+      <div class="jump-grid" id="jump5"></div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА: ВОПРОС -->
+<div class="modal-bg" id="modalQuestion">
+  <div class="modal-box">
+    <div class="modal-head" id="mqHead">
+      <div>
+        <div class="modal-num" id="mqNum"></div>
+        <div class="modal-zone-name" id="mqZoneName"></div>
+      </div>
+      <span class="modal-player-badge" id="mqPlayer"></span>
+    </div>
+    <div class="modal-body">
+      <span class="mq-diff" id="mqDiff"></span>
+      <div class="mq-question" id="mqQuestion"></div>
+      <div class="mq-opts" id="mqOpts"></div>
+      <div class="mq-fact" id="mqFact"><strong>Факт</strong><span id="mqFactText"></span></div>
+      <div class="mq-result" id="mqResult"></div>
+      <div class="mq-next" id="mqNextWrap">
+        <button class="primary-btn" onclick="closeQuestionModal()">Дальше →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- МОДАЛКА: СОБЫТИЕ -->
+<div class="modal-bg event-modal" id="modalEvent">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div>
+        <div class="modal-num">⚡ Событие</div>
+        <div class="modal-zone-name" style="color:rgba(200,151,58,0.7)">Карточка события</div>
+      </div>
+      <span class="modal-player-badge" id="meBadge"></span>
+    </div>
+    <div class="modal-body">
+      <div class="event-icon" id="meIcon"></div>
+      <div class="event-name" id="meName"></div>
+      <div class="event-effect" id="meEffect"></div>
+      <button class="primary-btn" onclick="applyEvent()">Применить →</button>
+    </div>
+  </div>
+</div>
+
+<footer>«Дорога Победы» · Образовательная настольная игра · 1941–1945</footer>
+
+<!-- TWEAKS PANEL -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "dark",
+  "boardStyle": "color"
+}/*EDITMODE-END*/;
+
+function TweaksApp() {
+  const { values, set } = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    if (values.theme) document.body.setAttribute('data-theme', values.theme);
+  }, [values.theme]);
+
+  return (
+    <TweaksPanel title="Tweaks">
+      <TweakSection label="Оформление">
+        <TweakRadio
+          label="Тема"
+          value={values.theme}
+          options={[
+            { value: 'dark', label: 'Тёмная' },
+            { value: 'light', label: 'Светлая' },
+          ]}
+          onChange={v => set('theme', v)}
+        />
+      </TweakSection>
+    </TweaksPanel>
+  );
+}
+
+const tweaksRoot = document.createElement('div');
+document.body.appendChild(tweaksRoot);
+ReactDOM.createRoot(tweaksRoot).render(<TweaksApp />);
+</script>
+
+<!-- GAME LOGIC (оригинальный JS) -->
+<script>
+
+// ═══════════════════════════════════════════════════════════════
+// ДАННЫЕ: 100 ВОПРОСОВ ПО 5 ЗОНАМ
+// ═══════════════════════════════════════════════════════════════
+const ZONES = [
+  // Zone 1 — Москва
+  [
+    {q:"В каком году началась Битва за Москву?",o:["А) 1940","Б) 1941","В) 1942","Г) 1943"],a:1,d:0,f:"Битва за Москву началась 30 сентября 1941 года с немецкой операции «Тайфун». Это было одно из решающих сражений начального периода Великой Отечественной войны."},
+    {q:"Как называлась немецкая наступательная операция против Москвы?",o:["А) «Барбаросса»","Б) «Цитадель»","В) «Тайфун»","Г) «Северный ветер»"],a:2,d:0,f:"Операция «Тайфун» — план захвата Москвы группой армий «Центр». Немецкое командование рассчитывало завершить её до наступления зимы."},
+    {q:"Кто командовал обороной Москвы в октябре–декабре 1941 года?",o:["А) Тимошенко","Б) Конев","В) Рокоссовский","Г) Жуков"],a:3,d:0,f:"Георгий Константинович Жуков был назначен командующим Западным фронтом 10 октября 1941 года и руководил обороной Москвы в самый критический период."},
+    {q:"Какой парад состоялся в Москве 7 ноября 1941 года, несмотря на продолжавшиеся бои?",o:["А) Парад в честь Октябрьской революции","Б) Парад Победы","В) Смотр гвардейских частей","Г) Торжественный марш ополчения"],a:0,d:0,f:"Парад 7 ноября 1941 года состоялся прямо на Красной площади. Войска шли на фронт прямо с парада, что имело огромное моральное значение для всей страны."},
+    {q:"Когда советские войска перешли в контрнаступление под Москвой?",o:["А) 5–6 декабря 1941","Б) 7 ноября 1941","В) 1 января 1942","Г) 22 марта 1942"],a:0,d:0,f:"5–6 декабря 1941 года советские войска начали контрнаступление по всему фронту. Немцев отбросили на 100–250 км от Москвы — это был первый крупный успех Красной армии в войне."},
+    {q:"На каком минимальном расстоянии от центра Москвы оказались немецкие войска в ноябре 1941 года?",o:["А) 8 км","Б) 25 км","В) 50 км","Г) 100 км"],a:0,d:0,f:"Немецкие разведывательные отряды в ноябре 1941 года подошли к Москве на 8 км — в районе Химок. Солдаты вермахта видели шпили московских зданий в бинокль."},
+    {q:"Как называлось советское добровольческое формирование из мирных жителей для защиты Москвы?",o:["А) Народная дружина","Б) Народное ополчение","В) Красная гвардия","Г) Трудовая армия"],a:1,d:0,f:"Московское народное ополчение было сформировано в июле 1941 года — в него вступили более 120 тысяч добровольцев. Многие ополченцы не имели военной подготовки, но сражались самоотверженно."},
+    {q:"Чем знаменита 316-я стрелковая дивизия под командованием генерала Панфилова?",o:["А) Первой ворвалась в Берлин","Б) Обороняла Волоколамское направление","В) Прорвала блокаду Ленинграда","Г) Освободила Киев"],a:1,d:1,f:"316-я дивизия Ивана Панфилова обороняла Волоколамское направление в ноябре 1941 года. Здесь родилась легенда о 28 панфиловцах, остановивших немецкие танки у разъезда Дубосеково."},
+    {q:"Что произошло с немецкой армией под Москвой зимой 1941–1942 годов, с точки зрения снабжения?",o:["А) Получила обильное пополнение","Б) Оказалась не подготовлена к морозам","В) Отступила планово на зимние позиции","Г) Перешла к позиционной войне по приказу"],a:1,d:1,f:"Вермахт не был готов к русским морозам: не хватало зимнего обмундирования, техника отказывала на морозе. Это стало одним из факторов провала немецкого наступления."},
+    {q:"Какое значение имела победа под Москвой в декабре 1941 года?",o:["А) Завершила Великую Отечественную войну","Б) Развеяла миф о непобедимости вермахта","В) Позволила сразу освободить всю оккупированную территорию","Г) Вынудила Германию подписать перемирие"],a:1,d:1,f:"Победа под Москвой стала первым крупным поражением Германии во Второй мировой войне. Миф о «блицкриге» и непобедимости вермахта был разрушен — это имело огромное политическое и психологическое значение."},
+    {q:"Что произошло с правительством и частью органов управления в период угрозы Москве?",o:["А) Трасса снабжения по льду Ладоги","Б) Шоссе Москва — Минск","В) Московская железнодорожная кольцевая","Г) Маршрут эвакуации правительства в Куйбышев"],a:3,d:1,f:"В период угрозы Москве правительство и часть органов управления были эвакуированы в Куйбышев (ныне Самара). Сталин остался в Москве, что имело важнейшее моральное значение для защитников города."},
+    {q:"Сколько советских дивизий было переброшено с Дальнего Востока для обороны Москвы осенью 1941 года?",o:["А) 2–3 дивизии","Б) около 10 дивизий","В) более 30 дивизий","Г) ни одной — переброска не проводилась"],a:1,d:1,f:"Благодаря сведениям разведчика Рихарда Зорге о том, что Япония не нападёт на СССР, Сталин перебросил с Дальнего Востока около 10 свежих дивизий. Они сыграли ключевую роль в декабрьском контрнаступлении."},
+    {q:"Как называлась немецкая группа армий, наступавшая на Москву?",o:["А) «Север»","Б) «Юг»","В) «Центр»","Г) «Восток»"],a:2,d:1,f:"Группа армий «Центр» под командованием фельдмаршала Бока была самой мощной немецкой группировкой. Именно она получила задачу захватить Москву в ходе операции «Тайфун»."},
+    {q:"Как называлась советская оборонительная линия на ближних подступах к Москве?",o:["А) «Линия Сталина»","Б) «Можайская линия обороны»","В) «Курская дуга»","Г) «Вяземский рубеж»"],a:1,d:1,f:"Можайская линия обороны строилась в спешке в октябре 1941 года на рубеже рек Лама, Москва и Нара. На её строительство были брошены тысячи мирных жителей."},
+    {q:"В ходе операции «Тайфун» немцам удалось окружить крупные советские группировки. Где это произошло?",o:["А) Под Киевом и Харьковом","Б) Под Вязьмой и Брянском","В) Под Тулой и Калинином","Г) Под Смоленском и Минском"],a:1,d:2,f:"В начале октября 1941 года под Вязьмой и Брянском попали в окружение около 650–700 тысяч советских солдат. Эта катастрофа открыла немцам дорогу к Москве — до столицы почти не было готовых к бою войск."},
+    {q:"Какую роль сыграла Тула в обороне Москвы?",o:["А) Была сдана немцам без боя","Б) Устояла и прикрыла Москву с юга","В) Стала штабом Западного фронта","Г) Была эвакуирована полностью"],a:1,d:2,f:"Тула выстояла в осаде с октября по декабрь 1941 года. Защитники города — регулярные части, рабочие и ополченцы — не позволили немцам обойти Москву с юга. В 1976 году Тула получила звание «Город-герой»."},
+    {q:"Кто командовал советским контрнаступлением под Москвой в декабре 1941 года?",o:["А) Маршал Тимошенко","Б) Жуков, Конев и командование Юго-Западного фронта","В) Жуков, Конев, Левашёв","Г) Только Жуков"],a:1,d:2,f:"В декабрьском контрнаступлении участвовали три фронта: Калининский (Конев), Западный (Жуков) и Юго-Западный. Координация действий трёх фронтов стала важным опытом советского военного командования."},
+    {q:"Какой советский разведчик передал сведения, позволившие перебросить дальневосточные дивизии к Москве?",o:["А) Николай Кузнецов","Б) Рихард Зорге","В) Лев Маневич","Г) Ким Филби"],a:1,d:2,f:"Рихард Зорге — советский разведчик в Японии — сообщил в Москву, что Япония не планирует нападение на СССР в 1941 году. Это позволило перебросить свежие дивизии с востока для защиты столицы."},
+    {q:"Что такое «Московская паника» октября 1941 года?",o:["А) Массовое дезертирство солдат с фронта","Б) Стихийное бегство части жителей и чиновников из Москвы","В) Немецкая пропагандистская операция","Г) Восстание против эвакуации"],a:1,d:2,f:"16–17 октября 1941 года в Москве началось стихийное бегство населения и части чиновников. Власти ввели осадное положение, расстрелы мародёров. Жуков и Сталин остановили панику жёсткими мерами."},
+    {q:"Каков итог Битвы за Москву в стратегическом отношении?",o:["А) Германия перешла к стратегической обороне на всём Восточном фронте","Б) Провал «блицкрига»: войну продолжить не удалось","В) Красная армия полностью отбросила немцев за линию государственной границы","Г) Гитлер был отстранён от командования"],a:0,d:2,f:"Контрнаступление под Москвой означало крах стратегии «молниеносной войны». Германия перешла к затяжной войне, к которой не была готова. Это стратегически предопределило её поражение, хотя сама война продолжалась ещё три с лишним года."},
+  ],
+  // Zone 2 — Ленинград
+  [
+    {q:"Сколько дней длилась блокада Ленинграда?",o:["А) 500 дней","Б) 650 дней","В) 872 дня","Г) 1000 дней"],a:2,d:0,f:"Блокада Ленинграда длилась 872 дня — с 8 сентября 1941 по 27 января 1944 года. Это одна из самых длительных осад города в истории человечества."},
+    {q:"Когда началась блокада Ленинграда?",o:["А) 22 июня 1941","Б) 8 сентября 1941","В) 1 декабря 1941","Г) 15 января 1942"],a:1,d:0,f:"8 сентября 1941 года немецкие войска замкнули кольцо окружения вокруг Ленинграда, захватив Шлиссельбург. С этого дня город был отрезан от Большой земли по суше."},
+    {q:"Как называлась единственная дорога снабжения Ленинграда в период блокады?",o:["А) «Дорога победы»","Б) «Дорога жизни»","В) «Ладожский путь»","Г) «Северный коридор»"],a:1,d:0,f:"«Дорога жизни» — ледовая трасса через Ладожское озеро, по которой зимой доставлялось продовольствие в блокадный Ленинград. Летом грузы везли на судах по той же акватории."},
+    {q:"Какой минимальный суточный паёк хлеба получали жители Ленинграда в самый тяжёлый период блокады?",o:["А) 500 г","Б) 300 г","В) 125 г","Г) 200 г"],a:2,d:0,f:"В ноябре–декабре 1941 года рабочие получали 250 г хлеба в сутки, а иждивенцы и дети — всего 125 г. Хлеб содержал большой процент примесей."},
+    {q:"Когда была полностью снята блокада Ленинграда?",o:["А) 18 января 1943","Б) 27 января 1944","В) 9 мая 1945","Г) 1 марта 1944"],a:1,d:0,f:"27 января 1944 года блокада Ленинграда была полностью снята в ходе операции «Январский гром». В городе впервые за годы войны прогремел победный салют."},
+    {q:"Какое озеро обеспечивало связь Ленинграда с Большой землёй по «Дороге жизни»?",o:["А) Онежское","Б) Чудское","В) Ладожское","Г) Ильмень"],a:2,d:0,f:"Ладожское озеро — крупнейшее озеро Европы — стало спасительной артерией блокадного Ленинграда. Зимой по льду шли грузовики, летом — баржи и суда."},
+    {q:"Как называлась первая советская операция, которая прорвала блокаду Ленинграда в 1943 году?",o:["А) «Искра»","Б) «Тайфун»","В) «Полярная звезда»","Г) «Январский гром»"],a:0,d:0,f:"Операция «Искра» (12–30 января 1943 года) позволила пробить коридор шириной 8–11 км вдоль южного берега Ладоги. По нему немедленно началось строительство железной дороги для снабжения города."},
+    {q:"Кто командовал Ленинградским фронтом в период полного снятия блокады в январе 1944 года?",o:["А) Жуков","Б) Говоров","В) Тимошенко","Г) Мерецков"],a:1,d:1,f:"Маршал Леонид Александрович Говоров командовал Ленинградским фронтом с апреля 1942 года. Именно он руководил операцией «Январский гром», окончательно снявшей блокаду."},
+    {q:"Сколько мирных жителей погибло в Ленинграде в период блокады по официальным данным?",o:["А) около 100 тысяч","Б) около 300 тысяч","В) около 800 тысяч — 1 миллиона","Г) около 3 миллионов"],a:2,d:1,f:"По различным оценкам, от голода, холода и бомбардировок в блокадном Ленинграде погибло от 800 тысяч до 1 миллиона мирных жителей. Большинство из них умерли от голода зимой 1941–1942 годов."},
+    {q:"Как называлось крупнейшее захоронение жертв блокады?",o:["А) Братское кладбище","Б) Пискарёвское мемориальное кладбище","В) Серафимовское кладбище","Г) Блокадный мемориал"],a:1,d:1,f:"Пискарёвское мемориальное кладбище — крупнейшее в мире захоронение жертв Второй мировой войны. Здесь покоятся около 500 тысяч жителей и защитников Ленинграда."},
+    {q:"Чем знаменита «Ленинградская симфония» Дмитрия Шостаковича?",o:["А) Написана после войны в честь победы","Б) Исполнена в осаждённом Ленинграде в 1942 году","В) Запрещена советской цензурой","Г) Посвящена Сталинградской битве"],a:1,d:1,f:"9 августа 1942 года Седьмая симфония Шостаковича была исполнена в осаждённом Ленинграде. Трансляция звучала через громкоговорители на немецкие позиции — это был символ непокорённого города."},
+    {q:"Когда был пробит коридор, соединивший Ленинград с Большой землёй?",o:["А) Сентябрь 1941","Б) Декабрь 1942","В) Январь 1943","Г) Март 1943"],a:2,d:1,f:"18 января 1943 года войска Ленинградского и Волховского фронтов встретились у Рабочего посёлка №1, пробив коридор. Уже через 17 дней по нему прошёл первый поезд в Ленинград."},
+    {q:"Что такое «Дневник Тани Савичевой»?",o:["А) Роман о блокаде, написанный после войны","Б) Записная книжка девочки, фиксировавшей гибель своей семьи","В) Официальный документ о потерях среди детей","Г) Школьное сочинение о войне"],a:1,d:1,f:"Таня Савичева — ленинградская девочка, которая в блокаду вела записную книжку, фиксируя даты смерти родственников. Её дневник стал одним из символов трагедии блокады и был представлен на Нюрнбергском процессе."},
+    {q:"Какова была примерная протяжённость ледовой трассы через Ладожское озеро?",o:["А) около 10 км","Б) около 30–60 км","В) около 120 км","Г) около 200 км"],a:1,d:1,f:"Ледовая трасса через Ладогу протяжённостью около 30–60 км (в зависимости от маршрута) работала с ноября 1941 по апрель 1942 года. За зиму по ней было перевезено более 360 тысяч тонн грузов."},
+    {q:"Какая немецкая группа армий осуществляла блокаду Ленинграда?",o:["А) «Центр»","Б) «Север»","В) «Юг»","Г) «Финляндия»"],a:1,d:2,f:"Группа армий «Север» под командованием фельдмаршала Вильгельма фон Лееба блокировала Ленинград. С севера город был окружён финскими войсками, что делало кольцо блокады практически замкнутым."},
+    {q:"Почему немцы не пошли на штурм Ленинграда, а выбрали тактику осады?",o:["А) Гитлер запретил штурм, желая уморить город голодом","Б) У немцев не хватало войск после потерь под Москвой","В) Советские укрепления были непреодолимы","Г) Финляндия отказалась участвовать в штурме"],a:0,d:2,f:"Гитлер принял решение не тратить силы на штурм: он рассчитывал, что город капитулирует от голода. Директива предписывала не принимать сдачу Ленинграда, чтобы избежать обязательств по снабжению населения."},
+    {q:"Как называлась операция по полному снятию блокады в январе 1944 года?",o:["А) «Искра»","Б) «Нева»","В) «Январский гром»","Г) «Северный ветер»"],a:2,d:2,f:"Операция «Январский гром» (14–27 января 1944 года) — совместный удар Ленинградского и Волховского фронтов. Немцев отбросили на 60–100 км от Ленинграда, полностью ликвидировав угрозу городу."},
+    {q:"Какой советский город, взятый немцами в 1941 году, замкнул кольцо блокады вокруг Ленинграда?",o:["А) Новгород","Б) Шлиссельбург","В) Пушкин","Г) Выборг"],a:1,d:2,f:"8 сентября 1941 года немцы захватили Шлиссельбург (Петрокрепость) у истока Невы из Ладожского озера. Это отрезало Ленинград от железнодорожного сообщения со страной."},
+    {q:"Как снабжался Ленинград летом, когда ледовая трасса не работала?",o:["А) Воздушным мостом через самолёты","Б) Подводными лодками","В) Судами по Ладожскому озеру","Г) Никак — летом снабжение прекращалось"],a:2,d:2,f:"Летом снабжение шло судами по Ладоге — «Дорога жизни» работала круглый год. Суда были под постоянными бомбардировками, но перевозки не прекращались ни летом, ни осенью."},
+    {q:"Какое звание было присвоено Ленинграду за героическую оборону?",o:["А) «Город воинской славы»","Б) «Город-герой»","В) «Город трудовой доблести»","Г) «Столица сопротивления»"],a:1,d:2,f:"Ленинград стал одним из первых городов-героев СССР. Звание было закреплено официально в 1965 году, хотя впервые употреблено ещё в приказе Верховного Главнокомандующего в 1945 году."},
+  ],
+  // Zone 3 — Сталинград
+  [
+    {q:"В каком году началась Сталинградская битва?",o:["А) 1941","Б) 1942","В) 1943","Г) 1944"],a:1,d:0,f:"Сталинградская битва началась 17 июля 1942 года и продолжалась до 2 февраля 1943 года. По масштабу и значению она считается одним из крупнейших сражений Второй мировой войны."},
+    {q:"Как назывался советский приказ 1942 года, запрещавший отступление без разрешения командования?",o:["А) Приказ №1","Б) Приказ №227 «Ни шагу назад»","В) Приказ №001 «Стоять насмерть»","Г) Директива Ставки №3"],a:1,d:0,f:"Приказ №227 от 28 июля 1942 года («Ни шагу назад») запрещал отступление без приказа. Он также вводил штрафные батальоны и заградительные отряды для борьбы с паникёрами."},
+    {q:"Какая немецкая армия была окружена под Сталинградом?",o:["А) 4-я танковая армия","Б) 6-я армия","В) 2-я полевая армия","Г) 1-я горная армия"],a:1,d:0,f:"6-я армия вермахта под командованием генерала Паулюса была окружена советскими войсками в ноябре 1942 года. Это было крупнейшее окружение немецких войск за всю войну."},
+    {q:"Кто командовал 6-й немецкой армией, сдавшейся под Сталинградом?",o:["А) Роммель","Б) Манштейн","В) Паулюс","Г) Гудериан"],a:2,d:0,f:"Фридрих Паулюс командовал 6-й армией в Сталинградской битве. 31 января 1943 года Гитлер присвоил ему звание фельдмаршала — однако Паулюс всё равно сдался в плен."},
+    {q:"Как называлась советская операция по окружению немецких войск под Сталинградом?",o:["А) «Тайфун»","Б) «Искра»","В) «Уран»","Г) «Цитадель»"],a:2,d:0,f:"Операция «Уран» (19–23 ноября 1942 года) — контрнаступление советских войск, в ходе которого три фронта окружили около 330 тысяч солдат 6-й немецкой армии. Это стало переломом в Сталинградской битве."},
+    {q:"Как называлась высота в центре Сталинграда, ставшая символом обороны города?",o:["А) Высота 102 (Мамаев Курган)","Б) Волжский утёс","В) Высота 56","Г) Сталинградский холм"],a:0,d:0,f:"Мамаев Курган (высота 102) — стратегически важная высота в центре Сталинграда. Бои за неё не прекращались почти всё время сражения; сегодня здесь находится крупнейший мемориальный комплекс в России."},
+    {q:"Какую реку советские войска обороняли, удерживая Сталинград?",o:["А) Дон","Б) Волгу","В) Урал","Г) Оку"],a:1,d:0,f:"Волга была за спиной у защитников Сталинграда — отступать было некуда. Переправы через Волгу под непрерывным огнём обеспечивали подкрепления и эвакуацию раненых."},
+    {q:"Кто командовал 62-й армией, непосредственно оборонявшей Сталинград?",o:["А) Жуков","Б) Рокоссовский","В) Чуйков","Г) Малиновский"],a:2,d:1,f:"Василий Иванович Чуйков командовал 62-й армией, непосредственно оборонявшей Сталинград. Его штаб находился на берегу Волги под постоянными бомбардировками."},
+    {q:"Что такое «тактика Чуйкова» в уличных боях Сталинграда?",o:["А) Массированные танковые атаки","Б) «Обнимание» противника — ближний бой вплотную к немецким позициям","В) Ночные вылазки снайперов","Г) Постоянное отступление с целью заманить врага"],a:1,d:1,f:"Чуйков ввёл тактику «обнимания» противника: советские солдаты держались вплотную к немецким позициям, лишая врага возможности использовать авиацию и артиллерию. Каждый дом превращался в крепость."},
+    {q:"Сколько немецких солдат попало в окружение в ходе операции «Уран»?",o:["А) около 50 тысяч","Б) около 150 тысяч","В) около 330 тысяч","Г) около 500 тысяч"],a:2,d:1,f:"В котле под Сталинградом оказалось около 330 тысяч солдат 6-й армии и союзных частей. До капитуляции 2 февраля 1943 года дожили около 90 тысяч человек — остальные погибли от боёв, холода и голода."},
+    {q:"Какая немецкая операция пыталась деблокировать окружённую армию Паулюса?",o:["А) «Зимняя гроза»","Б) «Тайфун»","В) «Северный ветер»","Г) «Огонь»"],a:0,d:1,f:"Операция «Зимняя гроза» (декабрь 1942 года) — попытка группы армий Манштейна пробиться к окружённой 6-й армии. Она провалилась: советские войска остановили деблокирующий удар в 40–50 км от котла."},
+    {q:"Как называлась советская операция, разгромившая итальянскую и венгерскую армии на Дону в декабре 1942 года?",o:["А) «Уран»","Б) «Малый Сатурн»","В) «Кольцо»","Г) «Гром»"],a:1,d:1,f:"Операция «Малый Сатурн» (16–30 декабря 1942 года) разгромила итальянскую 8-ю армию и венгерские части на Среднем Дону. Это окончательно лишило Манштейна возможности деблокировать Паулюса."},
+    {q:"Какой дом советские солдаты обороняли 58 дней в центре Сталинграда?",o:["А) Дом Советов","Б) Дом Павлова","В) Дом Родимцева","Г) Дом Чуйкова"],a:1,d:1,f:"Дом Павлова — четырёхэтажный жилой дом в центре Сталинграда, который группа сержанта Якова Павлова удерживала 58 дней. Немцы потеряли у этого дома больше солдат, чем при взятии Парижа."},
+    {q:"Как называлась финальная советская операция по уничтожению окружённой группировки?",o:["А) «Уран»","Б) «Малый Сатурн»","В) «Кольцо»","Г) «Звезда»"],a:2,d:1,f:"Операция «Кольцо» (10 января — 2 февраля 1943 года) — финальный удар Донского фронта Рокоссовского по окружённой 6-й армии. 2 февраля остатки войск Паулюса капитулировали."},
+    {q:"Почему Гитлер не разрешил Паулюсу прорываться из окружения в ноябре–декабре 1942 года?",o:["А) Он не знал о тяжёлом положении армии","Б) Обещал удержать Сталинград и доверял обещаниям Геринга снабдить армию авиацией","В) Паулюс сам отказался от прорыва","Г) Прорыв был невозможен технически"],a:1,d:2,f:"Геринг обещал снабжать окружённую армию по воздуху — 500 тонн грузов в сутки. Реально доставлялось 100–150 тонн. Гитлер, поверив обещаниям и не желая терять «Сталинград», запретил прорыв."},
+    {q:"Какое звание получил Паулюс накануне капитуляции и почему это было символично?",o:["А) Генерал-полковник — за храбрость","Б) Фельдмаршал — Гитлер намекал, что фельдмаршалы не сдаются в плен","В) Рейхсмаршал — высшее воинское звание","Г) Никакого — Гитлер разжаловал его"],a:1,d:2,f:"31 января 1943 года Гитлер присвоил Паулюсу звание фельдмаршала — ни один немецкий фельдмаршал до этого не сдавался в плен. Это был завуалированный приказ стреляться. Паулюс не подчинился и сдался."},
+    {q:"Каково стратегическое значение Сталинградской битвы для хода всей Второй мировой войны?",o:["А) Открыла второй фронт в Европе","Б) Стала коренным переломом — инициатива перешла к СССР и союзникам","В) Вынудила Японию выйти из войны","Г) Привела к немедленной капитуляции Италии"],a:1,d:2,f:"Сталинградская битва считается коренным переломом Второй мировой войны. После неё стратегическая инициатива перешла к советским войскам, а Германия перешла к обороне на Восточном фронте."},
+    {q:"Сколько советских фронтов участвовало в операции «Уран»?",o:["А) Один","Б) Два","В) Три","Г) Четыре"],a:2,d:2,f:"В операции «Уран» участвовали три фронта: Юго-Западный (Ватутин), Донской (Рокоссовский) и Сталинградский (Ерёменко). Согласованный удар с севера и юга создал двойное кольцо окружения."},
+    {q:"Как немецкое командование называло катастрофу под Сталинградом?",o:["А) «Восточная рана»","Б) «Сталинградский котёл» (Kessel)","В) «Волжская ловушка»","Г) «Зимний провал»"],a:1,d:2,f:"Немецкое слово «Kessel» (котёл) стало нарицательным для обозначения сталинградского окружения. В Германии впервые за войну был объявлен трёхдневный траур — это показало гражданам, что война пошла не по плану."},
+    {q:"Какой советский снайпер стал символом обороны Сталинграда, уничтожив более 200 врагов?",o:["А) Людмила Павличенко","Б) Василий Зайцев","В) Михаил Суров","Г) Иван Сидоренко"],a:1,d:2,f:"Василий Зайцев — снайпер 62-й армии, уничтожил более 225 солдат противника. Его противостояние с немецким «суперснайпером» Кёнигом стало легендой Сталинградской битвы и основой для книг и фильмов."},
+  ],
+  // Zone 4 — Курск
+  [
+    {q:"В каком году произошла Курская битва?",o:["А) 1942","Б) 1943","В) 1944","Г) 1941"],a:1,d:0,f:"Курская битва проходила с 5 июля по 23 августа 1943 года. Она стала одним из крупнейших сражений Второй мировой войны и окончательно закрепила стратегическую инициативу за советскими войсками."},
+    {q:"Как называлась немецкая наступательная операция на Курской дуге?",o:["А) «Тайфун»","Б) «Барбаросса»","В) «Цитадель»","Г) «Уран»"],a:2,d:0,f:"Операция «Цитадель» — план немецкого командования срезать Курский выступ и окружить советские войска. Гитлер несколько раз откладывал её начало, ожидая поступления новых танков «Тигр» и «Пантера»."},
+    {q:"Что такое «Курская дуга»?",o:["А) Укреплённая линия обороны","Б) Выступ советского фронта, вдававшийся в немецкие позиции","В) Название немецкой танковой армии","Г) Кодовое название советского контрнаступления"],a:1,d:0,f:"Курская дуга — выступ советского фронта глубиной около 150 км и шириной 200 км, образовавшийся после зимних боёв 1943 года. Немцы планировали срезать его ударами с севера и юга."},
+    {q:"Где произошло крупнейшее танковое сражение Курской битвы?",o:["А) Под Орлом","Б) Под Прохоровкой","В) Под Белгородом","Г) Под Харьковом"],a:1,d:0,f:"12 июля 1943 года под Прохоровкой столкнулись сотни советских и немецких танков. Это сражение считается одним из крупнейших танковых боёв в истории."},
+    {q:"Какие новые немецкие танки впервые были массово применены под Курском?",o:["А) Т-IV и Т-III","Б) «Тигр» и «Пантера»","В) «Леопард» и «Лев»","Г) «Фердинанд» и «Элефант»"],a:1,d:0,f:"Танки «Тигр» (Pz.VI) и «Пантера» (Pz.V) были брошены в бой под Курском. Советские войска заранее подготовились к встрече с ними, создав глубокую противотанковую оборону."},
+    {q:"Кто командовал советскими войсками на Курской дуге?",o:["А) Только Жуков","Б) Рокоссовский (Центральный фронт) и Ватутин (Воронежский фронт)","В) Конев и Тимошенко","Г) Малиновский и Толбухин"],a:1,d:0,f:"Центральный фронт Рокоссовского прикрывал северный фас дуги, Воронежский фронт Ватутина — южный. Координацию осуществляли представители Ставки Жуков и Василевский."},
+    {q:"Что советское командование сделало заранее, зная о готовящемся немецком наступлении?",o:["А) Нанесло упреждающий удар","Б) Отвело войска в тыл","В) Создало глубокоэшелонированную оборону","Г) Запросило помощь союзников"],a:2,d:0,f:"Советское командование заблаговременно создало восемь оборонительных полос общей глубиной до 300 км. Это была сознательная стратегия: измотать немцев в обороне, а затем перейти в контрнаступление."},
+    {q:"Какова была глубина советской обороны на Курской дуге?",o:["А) 10–20 км","Б) 50 км","В) около 300 км","Г) 100 км"],a:2,d:1,f:"Советская оборона на Курской дуге имела глубину до 300 км и состояла из восьми последовательных полос. На каждый километр фронта приходилось до 5000 мин — небывалая плотность минирования."},
+    {q:"Почему Гитлер несколько раз откладывал начало операции «Цитадель»?",o:["А) Ждал подхода союзных войск Италии","Б) Ожидал поступления новых танков «Тигр» и «Пантера»","В) Боялся советского контрудара","Г) Проводил перегруппировку войск после Сталинграда"],a:1,d:1,f:"Гитлер откладывал «Цитадель» с мая по июль 1943 года, ожидая больше тяжёлых танков. Это промедление дало советским войскам дополнительное время для укрепления обороны."},
+    {q:"Как называлось советское контрнаступление на орловском направлении, начавшееся 12 июля 1943 года?",o:["А) «Полководец Румянцев»","Б) «Кутузов»","В) «Суворов»","Г) «Багратион»"],a:1,d:1,f:"Операция «Кутузов» (12 июля — 18 августа 1943 года) — удар советских войск по Орловскому выступу. Именно в день её начала под Прохоровкой разгорелось крупнейшее танковое сражение."},
+    {q:"Как называлось советское контрнаступление на белгородско-харьковском направлении?",o:["А) «Кутузов»","Б) «Полководец Румянцев»","В) «Суворов»","Г) «Ушаков»"],a:1,d:1,f:"Операция «Полководец Румянцев» (3–23 августа 1943 года) — удар по немецкой группировке на южном фасе дуги. В ходе неё были освобождены Белгород и Харьков, а в Москве впервые за войну прогремел артиллерийский салют."},
+    {q:"Какое событие заставило Гитлера прекратить операцию «Цитадель» уже через неделю после начала?",o:["А) Гибель командующего немецкой группировкой","Б) Высадка союзников на Сицилии","В) Прорыв советских войск под Ленинградом","Г) Восстание в Берлине"],a:1,d:1,f:"10 июля 1943 года союзники высадились на Сицилии. Гитлер был вынужден перебросить часть войск с Восточного фронта в Италию, что стало одной из причин остановки «Цитадели»."},
+    {q:"Какой советский танк был основным в боях на Курской дуге?",o:["А) КВ-1","Б) Т-34","В) ИС-2","Г) Т-70"],a:1,d:1,f:"Танк Т-34 составлял основу советских бронетанковых войск под Курском. Хотя «Тигры» и «Пантеры» превосходили его в броне и вооружении, советские танкисты компенсировали это численным превосходством и тактикой ближнего боя."},
+    {q:"Чем завершилась Курская битва для немецких войск?",o:["А) Частичным успехом — немцы срезали дугу","Б) Стратегическим поражением — инициатива окончательно перешла к СССР","В) Стабилизацией фронта по новым рубежам","Г) Отступлением на заранее подготовленные позиции"],a:1,d:1,f:"После провала «Цитадели» и советского контрнаступления немецкие войска были вынуждены отступать. Курская битва стала последним крупным немецким наступлением на Восточном фронте."},
+    {q:"Почему советское командование выбрало оборонительную стратегию в начале Курской битвы?",o:["А) Не хватало танков для наступления","Б) Решили измотать немцев в обороне, а затем бить свежими резервами","В) Ставка запретила наступление","Г) Союзники попросили выжидать"],a:1,d:2,f:"Жуков убедил Сталина не наносить упреждающий удар, а дать немцам «разбиться» об глубокую оборону. Стратегический резерв — Степной фронт Конева — был придержан для решающего контрудара."},
+    {q:"Сколько танков с обеих сторон участвовало в сражении под Прохоровкой 12 июля 1943 года?",o:["А) около 100","Б) около 300","В) около 1200","Г) около 3000"],a:2,d:2,f:"В сражении под Прохоровкой участвовало около 1200 танков и самоходных орудий с обеих сторон. Советские потери были значительно больше немецких, однако немцы не смогли прорвать оборону и продолжить наступление."},
+    {q:"Какую роль в Курской битве сыграл разведчик Джон Кэрнкросс?",o:["А) Организовал снабжение советских войск","Б) Передал советской разведке подробные сведения о планах «Цитадели»","В) Убедил Черчилля открыть второй фронт","Г) Обеспечил доставку союзной техники"],a:1,d:2,f:"Джон Кэрнкросс — британский разведчик из «Кембриджской пятёрки» — передал советской разведке расшифрованные немецкие планы операции «Цитадель». Это позволило советскому командованию детально подготовиться к немецкому наступлению."},
+    {q:"Что такое «противотанковые опорные пункты» (ПТОП) в советской обороне под Курском?",o:["А) Укреплённые позиции пехоты в тылу","Б) Узлы обороны из скопления противотанковых орудий, ПТР и сапёров","В) Линии противотанковых рвов","Г) Засады танков Т-34 в засадных позициях"],a:1,d:2,f:"Противотанковые опорные пункты — новая советская тактика: кустовое расположение противотанковых орудий, ПТР и сапёров с минами. ПТОП создавали «огневые мешки», в которых немецкие танки несли огромные потери."},
+    {q:"Кто командовал немецкими войсками на южном фасе Курской дуги?",o:["А) Фон Клюге","Б) Манштейн","В) Модель","Г) Роммель"],a:1,d:2,f:"Группой армий «Юг» на южном фасе командовал фельдмаршал Эрих фон Манштейн. Его войска вклинились в советскую оборону глубже, чем на севере, но так и не смогли прорвать её полностью."},
+    {q:"Почему Курская битва считается окончательным коренным переломом в Великой Отечественной войне?",o:["А) После неё СССР получил ядерное оружие","Б) После неё Германия полностью утратила стратегическую инициативу на Востоке","В) После неё США вступили в войну против Японии","Г) После неё Германия начала переговоры о мире"],a:1,d:2,f:"После Курска немецкая армия уже никогда не предпринимала крупных стратегических наступлений на Востоке. Советские войска перешли к последовательным наступательным операциям, которые завершились взятием Берлина."},
+  ],
+  // Zone 5 — Берлин
+  [
+    {q:"Когда началась Берлинская наступательная операция советских войск?",o:["А) 1 января 1945","Б) 16 апреля 1945","В) 9 мая 1945","Г) 2 февраля 1945"],a:1,d:0,f:"Берлинская операция началась 16 апреля 1945 года и завершилась 2 мая капитуляцией берлинского гарнизона. Это была одна из последних крупных операций Великой Отечественной войны."},
+    {q:"Какой советский маршал командовал 1-м Белорусским фронтом при взятии Берлина?",o:["А) Конев","Б) Рокоссовский","В) Жуков","Г) Василевский"],a:2,d:0,f:"Маршал Георгий Константинович Жуков командовал 1-м Белорусским фронтом, наносившим главный удар на Берлин. Его фронт действовал на берлинском направлении совместно с 1-м Украинским фронтом Конева."},
+    {q:"Что такое Знамя Победы, водружённое над Рейхстагом?",o:["А) Личный штандарт Жукова","Б) Советский красный флаг, установленный на куполе Рейхстага","В) Флаг берлинского гарнизона при капитуляции","Г) Знамя 1-го Белорусского фронта"],a:1,d:0,f:"Знамя Победы — красный флаг, водружённый на крышу Рейхстага 30 апреля 1945 года. Официально его установили Михаил Егоров и Мелитон Кантария под командованием лейтенанта Береста."},
+    {q:"Когда был подписан Акт о безоговорочной капитуляции Германии?",o:["А) 30 апреля 1945","Б) 2 мая 1945","В) 8–9 мая 1945","Г) 24 июня 1945"],a:2,d:0,f:"Акт о безоговорочной капитуляции Германии был подписан в ночь с 8 на 9 мая 1945 года в Карлсхорсте. По московскому времени это произошло уже 9 мая — отсюда разница в датах с западными странами, где отмечают 8 мая."},
+    {q:"Где Гитлер провёл последние дни и покончил с собой?",o:["А) В Рейхстаге","Б) В Имперской канцелярии","В) В бункере под Рейхсканцелярией","Г) В загородной резиденции Берхтесгаден"],a:2,d:0,f:"Гитлер провёл последние недели в подземном бункере под зданием Рейхсканцелярии. 30 апреля 1945 года, когда советские войска были в нескольких кварталах, он покончил с собой."},
+    {q:"Сколько советских фронтов участвовало в Берлинской операции?",o:["А) Один","Б) Два","В) Три","Г) Четыре"],a:2,d:0,f:"В Берлинской операции участвовали три фронта: 1-й Белорусский (Жуков), 1-й Украинский (Конев) и 2-й Белорусский (Рокоссовский). Всего было задействовано около 2,5 миллиона советских солдат."},
+    {q:"Какой день в России отмечается как День Победы?",o:["А) 2 мая","Б) 8 мая","В) 9 мая","Г) 24 июня"],a:2,d:0,f:"9 мая 1945 года — День Победы в России и большинстве постсоветских государств. Западные союзники отмечают окончание войны в Европе 8 мая, так как капитуляция была подписана по центральноевропейскому времени."},
+    {q:"Что такое Зееловские высоты и почему они важны?",o:["А) Пригород Берлина, где находился штаб Гитлера","Б) Укреплённый рубеж на подступах к Берлину, прикрывавший дорогу на столицу","В) Холмы, где было водружено Знамя Победы","Г) Позиции немецкой зенитной артиллерии"],a:1,d:1,f:"Зееловские высоты — мощный оборонительный рубеж в 60 км восточнее Берлина. Бои за них с 16 по 19 апреля 1945 года стоили советским войскам больших потерь, но прорыв открыл путь к столице Германии."},
+    {q:"Кто командовал 1-м Украинским фронтом при взятии Берлина?",o:["А) Рокоссовский","Б) Конев","В) Малиновский","Г) Тимошенко"],a:1,d:1,f:"Маршал Иван Конев командовал 1-м Украинским фронтом, наносившим удар южнее Берлина. Его войска первыми вышли к реке Эльба и встретились с американскими частями 25 апреля 1945 года."},
+    {q:"Где состоялась встреча советских и американских войск в апреле 1945 года?",o:["А) В Берлине","Б) На реке Эльба у города Торгау","В) На реке Одер","Г) В Дрездене"],a:1,d:1,f:"25 апреля 1945 года советские и американские войска встретились на реке Эльба у Торгау. Это событие символизировало разделение Германии на зоны и скорый конец войны в Европе."},
+    {q:"Кто подписал Акт о капитуляции Германии от советской стороны?",o:["А) Сталин","Б) Жуков","В) Рокоссовский","Г) Василевский"],a:1,d:1,f:"От имени советского командования Акт о капитуляции подписал маршал Георгий Жуков. От Германии документ подписал фельдмаршал Вильгельм Кейтель — начальник штаба Верховного командования вермахта."},
+    {q:"Как называется знаменитая фотография советского солдата, водружающего флаг над Рейхстагом?",o:["А) «Знамя Победы»","Б) «Родина-мать зовёт»","В) «Знамя над Рейхстагом» (фото Халдея)","Г) «Последний штурм»"],a:2,d:1,f:"Фотография Евгения Халдея «Знамя над Рейхстагом» стала одним из символов Победы. Снимок был сделан 2 мая 1945 года — на нём советский солдат устанавливает красный флаг на крыше Рейхстага."},
+    {q:"Почему советское командование торопилось взять Берлин до союзников?",o:["А) Союзники уже шли на Берлин с запада","Б) Сталин хотел политически и символически завершить войну своими силами","В) Американцы попросили СССР взять Берлин первым","Г) Берлин был в советской зоне по договорённости"],a:1,d:1,f:"Сталин торопил наступление, опасаясь, что союзники доберутся до Берлина раньше. Политический и символический контроль над столицей Германии имел огромное значение для послевоенного устройства Европы."},
+    {q:"Сколько дней продолжались уличные бои в Берлине?",o:["А) 2 дня","Б) около 10 дней","В) месяц","Г) 3 недели"],a:1,d:1,f:"Уличные бои в Берлине продолжались с 26 апреля по 2 мая 1945 года — около 10 дней. Немцы сражались за каждый квартал и дом; советские войска несли значительные потери в городских боях."},
+    {q:"Какой немецкий генерал объявил о капитуляции берлинского гарнизона 2 мая 1945 года?",o:["А) Кейтель","Б) Вейдлинг","В) Паулюс","Г) Модель"],a:1,d:2,f:"Генерал Гельмут Вейдлинг — последний комендант Берлина — подписал приказ о капитуляции гарнизона 2 мая 1945 года. После смерти Гитлера он принял ответственность за судьбу остатков защитников города."},
+    {q:"Какую роль в Берлинской операции сыграло соперничество между Жуковым и Коневым?",o:["А) Никакой — они действовали строго по единому плану","Б) Сталин намеренно создал конкуренцию, чтобы ускорить взятие города","В) Конев саботировал приказы Жукова","Г) Жуков передал часть своего фронта Коневу"],a:1,d:2,f:"По свидетельствам, Сталин намеренно оставил разграничительную линию между фронтами незавершённой, создав конкуренцию между Жуковым и Коневым. Это ускорило темп наступления, но привело к хаосу и лишним потерям в городских боях."},
+    {q:"Что произошло с немецкой группой армий «Висла» в ходе Берлинской операции?",o:["А) Отступила в Норвегию","Б) Была окружена и уничтожена или капитулировала","В) Сдалась американцам на Западном фронте","Г) Удержала рубеж на Одере"],a:1,d:2,f:"Группа армий «Висла», оборонявшая берлинское направление, была разгромлена в ходе операции. Часть немецких частей пыталась прорваться на запад, чтобы сдаться союзникам, а не советским войскам."},
+    {q:"Как называлось торжественное мероприятие в Москве 24 июня 1945 года, посвящённое победе?",o:["А) День Победы","Б) Парад Победы","В) Смотр победителей","Г) Марш освободителей"],a:1,d:2,f:"Парад Победы на Красной площади 24 июня 1945 года — кульминация празднования победы. К подножию Мавзолея были брошены штандарты разгромленных немецких частей; парадом командовал Рокоссовский, принимал — Жуков."},
+    {q:"Каковы примерные советские потери в Берлинской операции?",o:["А) около 10 тысяч человек","Б) около 80 тысяч убитыми и более 280 тысяч ранеными","В) около 500 тысяч человек","Г) около 1 миллиона человек"],a:1,d:2,f:"По официальным данным, в Берлинской операции советские войска потеряли около 78–81 тысячи убитыми и более 280 тысяч ранеными. Высокие потери объясняются жестокими уличными боями и яростным сопротивлением противника."},
+    {q:"Что символизировало водружение Знамени Победы над Рейхстагом?",o:["А) Начало послевоенного устройства Европы","Б) Окончательный разгром нацистской Германии и завершение войны в Европе","В) Победу СССР над Японией","Г) Передачу власти новому правительству Германии"],a:1,d:2,f:"Рейхстаг — символ германской государственности — был выбран советским командованием как главная цель штурма именно из-за его символического значения. Красный флаг над ним означал полный крах Третьего рейха и победу советского народа в четырёхлетней войне."},
+  ],
+];
+
+// ═══════════════════════════════════════════════════════════════
+// КАРТОЧКИ СОБЫТИЙ
+// ═══════════════════════════════════════════════════════════════
+const EVENT_CARDS = [
+  { icon: '📯', name: 'Приказ наступать!', type: 'pos', effect: 'move', value: +3, desc: 'Вперёд на 3 клетки' },
+  { icon: '🎖', name: 'Подкрепление из резерва', type: 'pos', effect: 'move', value: +2, desc: 'Вперёд на 2 клетки' },
+  { icon: '🔭', name: 'Разведка нашла проход', type: 'pos', effect: 'skipQuestion', value: 0, desc: 'Остаёшься на месте без вопроса' },
+  { icon: '🎆', name: 'Парад 7 ноября', type: 'pos', effect: 'move', value: +2, desc: 'Вперёд на 2 клетки и бонусный бросок' },
+  { icon: '📡', name: 'Подвиг связиста', type: 'pos', effect: 'move', value: +4, desc: 'Вперёд на 4 клетки' },
+  { icon: '↩', name: 'Приказ об отступлении', type: 'neg', effect: 'move', value: -3, desc: 'Назад на 3 клетки' },
+  { icon: '🩹', name: 'Ранение', type: 'neg', effect: 'skipTurn', value: 0, desc: 'Пропускаешь следующий ход' },
+  { icon: '💥', name: 'Разрушенный мост', type: 'neg', effect: 'move', value: -2, desc: 'Назад на 2 клетки' },
+  { icon: '🌀', name: 'Окружение', type: 'neg', effect: 'move', value: -2, desc: 'Назад на 2 клетки' },
+  { icon: '❄', name: 'Метель', type: 'neg', effect: 'skipTurn', value: 0, desc: 'Пропускаешь следующий ход' },
+];
+
+// Клетки событий: по 4 на зону, 20 всего (не ставим на 100 — это финиш)
+const EVENT_CELLS = new Set([
+   5, 10, 14, 18,
+  25, 30, 34, 38,
+  45, 50, 54, 58,
+  65, 70, 74, 78,
+  85, 90, 94, 98,
+]);
+
+const ZONE_NAMES = ['Битва за Москву','Оборона Ленинграда','Сталинград','Курская битва','Взятие Берлина'];
+const DIFF_LABELS = ['Просто','Средне','Сложно'];
+const DIFF_CLASSES = ['diff-easy','diff-med','diff-hard'];
+const LETTERS = ['А','Б','В','Г'];
+const TOKENS = ['🔴','🔵','🟢','🟡'];
+const OFFSETS = [1, 21, 41, 61, 81];
+
+function zoneOfCell(n) {
+  if (n <= 0) return 0;
+  if (n <= 20) return 0;
+  if (n <= 40) return 1;
+  if (n <= 60) return 2;
+  if (n <= 80) return 3;
+  return 4;
+}
+
+function cellPos(n) {
+  // n in 1..100; returns {row, col} where row 0 — сверху
+  const i = n - 1;
+  const rowFromBottom = Math.floor(i / 10);
+  const col = rowFromBottom % 2 === 0 ? (i % 10) : (9 - (i % 10));
+  const row = 9 - rowFromBottom;
+  return { row, col };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ЭКРАНЫ
+// ═══════════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+function goMenu() {
+  showScreen('screen-menu');
+  document.getElementById('headerSub').textContent = 'Настольная игра-ходилка · 100 карточек · 5 битв';
+}
+function goSetup() {
+  showScreen('screen-setup');
+  document.getElementById('headerSub').textContent = 'Настройка партии';
+  renderSetup();
+}
+function goQuiz() {
+  showScreen('screen-quiz');
+  document.getElementById('headerSub').textContent = 'Режим: учить вопросы';
+  for (let z = 1; z <= 5; z++) renderZone(z);
+}
+function goGame() {
+  showScreen('screen-game');
+  document.getElementById('headerSub').textContent = 'Партия идёт — до Берлина!';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// НАСТРОЙКА
+// ═══════════════════════════════════════════════════════════════
+let setupState = {
+  count: 3,
+  players: [
+    { name: 'Игрок 1', token: 0 },
+    { name: 'Игрок 2', token: 1 },
+    { name: 'Игрок 3', token: 2 },
+    { name: 'Игрок 4', token: 3 },
+  ],
+};
+
+function renderSetup() {
+  document.querySelectorAll('#countPicker .count-btn').forEach(b => {
+    b.classList.toggle('active', +b.dataset.count === setupState.count);
+  });
+  const rows = document.getElementById('playerRows');
+  rows.innerHTML = '';
+  for (let i = 0; i < setupState.count; i++) {
+    const p = setupState.players[i];
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    const tokPick = document.createElement('div');
+    tokPick.className = 'token-pick';
+    TOKENS.forEach((tok, ti) => {
+      const b = document.createElement('button');
+      b.textContent = tok;
+      if (p.token === ti) b.classList.add('active');
+      // занято другим игроком?
+      const takenBy = setupState.players.slice(0, setupState.count).findIndex((pp, idx) => idx !== i && pp.token === ti);
+      if (takenBy !== -1) b.disabled = true;
+      b.onclick = () => { setupState.players[i].token = ti; renderSetup(); };
+      tokPick.appendChild(b);
+    });
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = p.name;
+    input.maxLength = 20;
+    input.oninput = (e) => { setupState.players[i].name = e.target.value; };
+    row.appendChild(tokPick);
+    row.appendChild(input);
+    rows.appendChild(row);
+  }
+}
+
+document.getElementById('countPicker').addEventListener('click', (e) => {
+  const b = e.target.closest('.count-btn');
+  if (!b) return;
+  setupState.count = +b.dataset.count;
+  // перераспределим фишки если пересекаются
+  const used = new Set();
+  for (let i = 0; i < setupState.count; i++) {
+    if (used.has(setupState.players[i].token)) {
+      for (let t = 0; t < 4; t++) if (!used.has(t)) { setupState.players[i].token = t; break; }
+    }
+    used.add(setupState.players[i].token);
+  }
+  renderSetup();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// ИГРА
+// ═══════════════════════════════════════════════════════════════
+let game = null;
+
+function startGame() {
+  const players = setupState.players.slice(0, setupState.count).map((p, i) => ({
+    id: i,
+    name: (p.name || ('Игрок '+(i+1))).trim() || ('Игрок '+(i+1)),
+    token: TOKENS[p.token],
+    pos: 0,
+    prevPos: 0,
+    correct: 0,
+    wrong: 0,
+    skipNextTurn: false,
+  }));
+  game = {
+    players,
+    currentIdx: 0,
+    lastRoll: null,
+    decks: [shuffleDeck(20), shuffleDeck(20), shuffleDeck(20), shuffleDeck(20), shuffleDeck(20)],
+    eventDeck: shuffleDeck(EVENT_CARDS.length),
+    phase: 'roll', // 'roll' | 'resolving' | 'finished'
+    extraRollPending: false,
+  };
+  goGame();
+  renderGame();
+}
+
+function shuffleDeck(n) {
+  const arr = [];
+  for (let i = 0; i < n; i++) arr.push(i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function drawQuestion(zoneIdx) {
+  let deck = game.decks[zoneIdx];
+  if (deck.length === 0) {
+    // перемешать "сброс" — то есть начать заново
+    deck = shuffleDeck(ZONES[zoneIdx].length);
+    game.decks[zoneIdx] = deck;
+  }
+  return deck.pop();
+}
+
+function drawEvent() {
+  if (game.eventDeck.length === 0) {
+    game.eventDeck = shuffleDeck(EVENT_CARDS.length);
+  }
+  return game.eventDeck.pop();
+}
+
+function renderGame() {
+  renderBoard();
+  renderScoreboard();
+  renderTurnBanner();
+}
+
+function renderBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  // 100 клеток
+  const cellDivs = [];
+  for (let n = 1; n <= 100; n++) {
+    const { row, col } = cellPos(n);
+    const z = zoneOfCell(n) + 1;
+    const cell = document.createElement('div');
+    cell.className = 'cell zone-' + z;
+    if (EVENT_CELLS.has(n)) cell.classList.add('event');
+    if (n === 100) cell.classList.add('finish');
+    cell.style.gridRow = (row + 1);
+    cell.style.gridColumn = (col + 1);
+    const num = document.createElement('span');
+    num.className = 'num';
+    num.textContent = n === 100 ? '' : n;
+    cell.appendChild(num);
+    const tokWrap = document.createElement('div');
+    tokWrap.className = 'tokens-on-cell';
+    tokWrap.dataset.cell = n;
+    cell.appendChild(tokWrap);
+    board.appendChild(cell);
+    cellDivs[n] = tokWrap;
+  }
+  // старт — пусть висит как «нулевая позиция» на клетке 1 в виде тонкой подсветки; для простоты фишки на позиции 0 рисуем на клетке 1 сбоку не будем — нарисуем их у клетки 1 но слегка иначе. Проще: при pos=0 рисуем в левом нижнем углу клетки 1 как индикатор старта.
+  game.players.forEach(p => {
+    const targetCell = p.pos === 0 ? 1 : p.pos;
+    const tokWrap = cellDivs[targetCell];
+    if (!tokWrap) return;
+    const chip = document.createElement('span');
+    chip.className = 'token-chip';
+    chip.textContent = p.token;
+    if (p.pos === 0) chip.style.opacity = '0.55';
+    tokWrap.appendChild(chip);
+  });
+}
+
+function renderScoreboard() {
+  const sb = document.getElementById('scoreboard');
+  sb.innerHTML = '';
+  game.players.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'score-card' + (i === game.currentIdx ? ' current' : '');
+    card.innerHTML = `
+      <span class="s-tok">${p.token}</span>
+      <div class="s-body">
+        <div class="s-name">${escapeHtml(p.name)}</div>
+        <div class="s-stat">Клетка ${p.pos} · ✓${p.correct} · ✗${p.wrong}</div>
+      </div>
+    `;
+    sb.appendChild(card);
+  });
+}
+
+function renderTurnBanner() {
+  const banner = document.getElementById('turnBanner');
+  const p = game.players[game.currentIdx];
+  let extra = '';
+  if (p.skipNextTurn) extra = ' <em style="color:#A32D2D;font-size:13px">(пропуск хода)</em>';
+  else if (game.extraRollPending) extra = ' <em style="color:#3B6D11;font-size:13px">(бонусный бросок)</em>';
+  banner.innerHTML = `<span class="t-tok">${p.token}</span>Ход: <strong>${escapeHtml(p.name)}</strong>${extra}`;
+  document.getElementById('rollBtn').disabled = game.phase !== 'roll';
+  if (p.skipNextTurn) {
+    document.getElementById('diceInfo').textContent = 'Ранение/метель — пропуск хода';
+    document.getElementById('rollBtn').textContent = 'Пропустить ход';
+  } else {
+    document.getElementById('diceInfo').textContent = 'Бросай кубик!';
+    document.getElementById('rollBtn').textContent = 'Бросить кубик';
+  }
+}
+
+function rollDice() {
+  if (game.phase !== 'roll') return;
+  const p = game.players[game.currentIdx];
+  if (p.skipNextTurn) {
+    p.skipNextTurn = false;
+    endTurn();
+    return;
+  }
+  game.phase = 'resolving';
+  document.getElementById('rollBtn').disabled = true;
+  const dice = document.getElementById('dice');
+  dice.classList.remove('rolling');
+  void dice.offsetWidth;
+  dice.classList.add('rolling');
+  const roll = 1 + Math.floor(Math.random() * 6);
+  // анимация мигания цифр
+  let flick = 0;
+  const flickInt = setInterval(() => {
+    dice.textContent = 1 + Math.floor(Math.random() * 6);
+    flick++;
+    if (flick > 5) {
+      clearInterval(flickInt);
+      dice.textContent = roll;
+    }
+  }, 80);
+  setTimeout(() => {
+    game.lastRoll = roll;
+    document.getElementById('diceInfo').textContent = 'Выпало: ' + roll;
+    movePlayer(game.currentIdx, roll);
+  }, 700);
+}
+
+function movePlayer(playerIdx, steps) {
+  const p = game.players[playerIdx];
+  p.prevPos = p.pos;
+  let newPos = p.pos + steps;
+  if (newPos > 100) newPos = 100;
+  if (newPos < 1) newPos = 1;
+  // анимация пошагово
+  let cur = p.pos;
+  const step = steps > 0 ? 1 : -1;
+  const target = newPos;
+  const tick = () => {
+    if (cur === target) {
+      p.pos = target;
+      renderGame();
+      setTimeout(() => handleLanding(playerIdx), 300);
+      return;
+    }
+    cur += step;
+    if (cur < 0) cur = 0;
+    if (cur > 100) cur = 100;
+    p.pos = cur;
+    renderGame();
+    setTimeout(tick, 150);
+  };
+  tick();
+}
+
+function handleLanding(playerIdx) {
+  const p = game.players[playerIdx];
+  if (p.pos === 100) {
+    // на финише — контрольный вопрос зоны 5 (или считать достижение = победа с вопросом)
+    openQuestion(playerIdx, 4, true);
+    return;
+  }
+  if (EVENT_CELLS.has(p.pos)) {
+    openEvent(playerIdx);
+    return;
+  }
+  // обычная клетка — вопрос зоны
+  const zoneIdx = zoneOfCell(p.pos);
+  openQuestion(playerIdx, zoneIdx, false);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// МОДАЛКА ВОПРОСА
+// ═══════════════════════════════════════════════════════════════
+let currentQ = null;
+
+function openQuestion(playerIdx, zoneIdx, isFinal) {
+  const p = game.players[playerIdx];
+  const qIdx = drawQuestion(zoneIdx);
+  const q = ZONES[zoneIdx][qIdx];
+  currentQ = { playerIdx, zoneIdx, qIdx, q, isFinal, answered: false };
+
+  const head = document.getElementById('mqHead');
+  head.className = 'modal-head z' + (zoneIdx + 1);
+  document.getElementById('mqNum').textContent = 'Клетка №' + p.pos;
+  document.getElementById('mqZoneName').textContent = ZONE_NAMES[zoneIdx] + (isFinal ? ' · ФИНИШ' : '');
+  document.getElementById('mqPlayer').innerHTML = p.token + ' ' + escapeHtml(p.name);
+  const diffEl = document.getElementById('mqDiff');
+  diffEl.textContent = DIFF_LABELS[q.d];
+  diffEl.className = 'mq-diff ' + DIFF_CLASSES[q.d];
+  document.getElementById('mqQuestion').textContent = q.q;
+  const optsEl = document.getElementById('mqOpts');
+  optsEl.innerHTML = '';
+  q.o.forEach((opt, i) => {
+    const d = document.createElement('div');
+    d.className = 'mq-opt';
+    d.innerHTML = '<span class="mq-letter">' + LETTERS[i] + ')</span><span>' + escapeHtml(opt.slice(3)) + '</span>';
+    d.onclick = () => answerQuestion(i);
+    optsEl.appendChild(d);
+  });
+  document.getElementById('mqFactText').textContent = q.f;
+  document.getElementById('mqFact').classList.remove('visible');
+  document.getElementById('mqResult').classList.remove('visible');
+  document.getElementById('mqNextWrap').classList.remove('visible');
+  document.getElementById('modalQuestion').classList.add('active');
+}
+
+function answerQuestion(choice) {
+  if (!currentQ || currentQ.answered) return;
+  currentQ.answered = true;
+  const q = currentQ.q;
+  const opts = document.querySelectorAll('#mqOpts .mq-opt');
+  opts.forEach((el, i) => {
+    el.classList.add('locked');
+    if (i === q.a) el.classList.add(choice === i ? 'correct' : 'reveal');
+    else if (i === choice) el.classList.add('wrong');
+    el.onclick = null;
+  });
+  const correct = choice === q.a;
+  const p = game.players[currentQ.playerIdx];
+  if (correct) p.correct++; else p.wrong++;
+  const res = document.getElementById('mqResult');
+  res.className = 'mq-result visible ' + (correct ? 'ok' : 'no');
+  if (correct) {
+    res.textContent = currentQ.isFinal ? '🏆 Правильно! Берлин взят!' : '✓ Правильно! Остаёшься на клетке.';
+  } else {
+    res.textContent = currentQ.isFinal
+      ? '✗ Неправильно. Возврат на клетку ' + p.prevPos
+      : '✗ Неправильно. Возврат на клетку ' + p.prevPos;
+  }
+  document.getElementById('mqFact').classList.add('visible');
+  document.getElementById('mqNextWrap').classList.add('visible');
+}
+
+function closeQuestionModal() {
+  document.getElementById('modalQuestion').classList.remove('active');
+  const q = currentQ;
+  if (!q) return;
+  const p = game.players[q.playerIdx];
+  const wasCorrect = (() => {
+    // проверим по результату DOM-класса
+    const opts = document.querySelectorAll('#mqOpts .mq-opt');
+    for (const el of opts) if (el.classList.contains('correct')) return true;
+    return false;
+  })();
+  if (wasCorrect) {
+    if (q.isFinal) {
+      currentQ = null;
+      finishGame(q.playerIdx);
+      return;
+    }
+    // остаётся на клетке — переход к следующему игроку
+    currentQ = null;
+    endTurn();
+  } else {
+    // возврат на предыдущую позицию
+    const prev = p.prevPos;
+    // анимируем возврат
+    const step = prev < p.pos ? -1 : 1;
+    const tick = () => {
+      if (p.pos === prev) {
+        renderGame();
+        currentQ = null;
+        endTurn();
+        return;
+      }
+      p.pos += step;
+      renderGame();
+      setTimeout(tick, 120);
+    };
+    tick();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// МОДАЛКА СОБЫТИЯ
+// ═══════════════════════════════════════════════════════════════
+let currentEvent = null;
+
+function openEvent(playerIdx) {
+  const cardIdx = drawEvent();
+  const card = EVENT_CARDS[cardIdx];
+  currentEvent = { playerIdx, card };
+  const p = game.players[playerIdx];
+  document.getElementById('meBadge').innerHTML = p.token + ' ' + escapeHtml(p.name);
+  document.getElementById('meIcon').textContent = card.icon;
+  document.getElementById('meName').textContent = card.name;
+  const eff = document.getElementById('meEffect');
+  eff.textContent = card.desc;
+  eff.className = 'event-effect ' + card.type;
+  document.getElementById('modalEvent').classList.add('active');
+}
+
+function applyEvent() {
+  if (!currentEvent) return;
+  document.getElementById('modalEvent').classList.remove('active');
+  const { playerIdx, card } = currentEvent;
+  const p = game.players[playerIdx];
+  currentEvent = null;
+
+  if (card.effect === 'move') {
+    const steps = card.value;
+    // движение без вопроса после; затем переход хода (кроме "Парад" — бонусный бросок)
+    const isParad = card.name === 'Парад 7 ноября';
+    animateEventMove(playerIdx, steps, () => {
+      if (p.pos === 100) { openQuestion(playerIdx, 4, true); return; }
+      if (isParad) {
+        game.extraRollPending = true;
+      }
+      endTurn();
+    });
+  } else if (card.effect === 'skipQuestion') {
+    // остаётся на месте, ход переходит
+    endTurn();
+  } else if (card.effect === 'skipTurn') {
+    p.skipNextTurn = true;
+    endTurn();
+  }
+}
+
+function animateEventMove(playerIdx, steps, done) {
+  const p = game.players[playerIdx];
+  let target = p.pos + steps;
+  if (target > 100) target = 100;
+  if (target < 1) target = 1;
+  const step = target > p.pos ? 1 : -1;
+  const tick = () => {
+    if (p.pos === target) { renderGame(); done(); return; }
+    p.pos += step;
+    renderGame();
+    setTimeout(tick, 150);
+  };
+  if (p.pos === target) { done(); return; }
+  tick();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ХОД И КОНЕЦ ИГРЫ
+// ═══════════════════════════════════════════════════════════════
+function endTurn() {
+  if (game.extraRollPending) {
+    // тот же игрок ходит ещё раз
+    game.extraRollPending = false;
+    game.phase = 'roll';
+    renderGame();
+    return;
+  }
+  game.currentIdx = (game.currentIdx + 1) % game.players.length;
+  game.phase = 'roll';
+  renderGame();
+}
+
+function finishGame(winnerIdx) {
+  game.phase = 'finished';
+  const winner = game.players[winnerIdx];
+  document.getElementById('winTitle').innerHTML = '🏆 Победа! ' + escapeHtml(winner.name) + ' взял Берлин';
+  const stats = document.getElementById('winStats');
+  stats.innerHTML = '';
+  // сортировка: победитель первый, затем по клетке и по правильным
+  const sorted = game.players.slice().sort((a, b) => {
+    if (a.id === winnerIdx) return -1;
+    if (b.id === winnerIdx) return 1;
+    if (b.pos !== a.pos) return b.pos - a.pos;
+    return b.correct - a.correct;
+  });
+  sorted.forEach(p => {
+    const row = document.createElement('div');
+    row.className = 'win-row' + (p.id === winnerIdx ? ' winner' : '');
+    row.innerHTML = `
+      <span class="wr-tok">${p.token}</span>
+      <span class="wr-name">${escapeHtml(p.name)}</span>
+      <span class="wr-stat">Клетка ${p.pos} · ✓ ${p.correct} · ✗ ${p.wrong}</span>
+    `;
+    stats.appendChild(row);
+  });
+  showScreen('screen-win');
+  document.getElementById('headerSub').textContent = 'Партия окончена';
+}
+
+function confirmQuit() {
+  if (!game || game.phase === 'finished') { goMenu(); return; }
+  if (confirm('Выйти в меню? Текущая партия будет потеряна.')) goMenu();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// УТИЛИТЫ
+// ═══════════════════════════════════════════════════════════════
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ═══════════════════════════════════════════════════════════════
+// РЕЖИМ ВИКТОРИНЫ (старый интерфейс)
+// ═══════════════════════════════════════════════════════════════
+let qCursors = [0,0,0,0,0];
+let qStates = ZONES.map(z => Array(z.length).fill(null));
+let qActiveZone = 1;
+
+function switchZone(z) {
+  qActiveZone = z;
+  document.querySelectorAll('.zone-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('zone'+z).classList.add('active');
+  document.querySelectorAll('.zone-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.zone-tab[data-zone="'+z+'"]').classList.add('active');
+  renderZone(z);
+}
+
+function renderZone(z) {
+  const zi = z - 1;
+  const cards = ZONES[zi];
+  const cur = qCursors[zi];
+  const c = cards[cur];
+  const offset = OFFSETS[zi];
+  const state = qStates[zi];
+
+  document.getElementById('cnum'+z).textContent = '№' + (offset + cur);
+  const db = document.getElementById('diff'+z);
+  db.textContent = DIFF_LABELS[c.d];
+  db.className = 'diff-badge ' + DIFF_CLASSES[c.d];
+
+  document.getElementById('q'+z).textContent = c.q;
+  document.getElementById('prog'+z).style.width = ((cur+1)/20*100)+'%';
+  document.getElementById('plabel'+z).textContent = (cur+1)+' / 20';
+
+  const optsEl = document.getElementById('opts'+z);
+  optsEl.innerHTML = '';
+  c.o.forEach((opt, i) => {
+    const d = document.createElement('div');
+    d.className = 'option';
+    if (state[cur] !== null) {
+      d.classList.add('answered');
+      if (i === c.a) d.classList.add(state[cur] === i ? 'correct' : 'reveal-correct');
+      else if (i === state[cur]) d.classList.add('wrong');
+    }
+    d.innerHTML = '<span class="opt-letter">'+LETTERS[i]+')</span><span>'+opt.slice(3)+'</span>';
+    if (state[cur] === null) d.onclick = () => qanswer(z, i);
+    optsEl.appendChild(d);
+  });
+
+  const factEl = document.getElementById('fact'+z);
+  document.getElementById('ft'+z).textContent = c.f;
+  const revEl = document.getElementById('rev'+z);
+  if (state[cur] !== null) {
+    factEl.classList.add('visible');
+    revEl.style.display = 'none';
+  } else {
+    factEl.classList.remove('visible');
+    revEl.style.display = 'block';
+  }
+
+  document.getElementById('prev'+z).disabled = cur === 0;
+  document.getElementById('next'+z).disabled = cur === 19;
+  renderJump(z);
+  renderQScore(z);
+}
+
+function qanswer(z, i) {
+  const zi = z - 1;
+  qStates[zi][qCursors[zi]] = i;
+  renderZone(z);
+}
+
+function reveal(z) {
+  const zi = z - 1;
+  qStates[zi][qCursors[zi]] = ZONES[zi][qCursors[zi]].a;
+  renderZone(z);
+}
+
+function qnav(z, d) {
+  const zi = z - 1;
+  qCursors[zi] = Math.max(0, Math.min(19, qCursors[zi] + d));
+  renderZone(z);
+}
+
+function renderJump(z) {
+  const zi = z - 1;
+  const state = qStates[zi];
+  const cards = ZONES[zi];
+  const el = document.getElementById('jump'+z);
+  el.innerHTML = '';
+  for (let i = 0; i < 20; i++) {
+    const b = document.createElement('button');
+    b.className = 'jump-btn';
+    b.textContent = OFFSETS[zi] + i;
+    if (i === qCursors[zi]) b.classList.add('j-current');
+    else if (state[i] !== null) b.classList.add(state[i] === cards[i].a ? 'j-correct' : 'j-wrong');
+    b.onclick = (idx => () => { qCursors[zi] = idx; renderZone(z); })(i);
+    el.appendChild(b);
+  }
+}
+
+function renderQScore(z) {
+  const zi = z - 1;
+  const state = qStates[zi];
+  const cards = ZONES[zi];
+  const answered = state.filter(s => s !== null).length;
+  const correct = state.filter((s,i) => s !== null && s === cards[i].a).length;
+  const el = document.getElementById('score'+z);
+  if (answered === 0) { el.innerHTML = ''; return; }
+  el.innerHTML =
+    '<span class="score-chip">Отвечено: <strong>'+answered+'/20</strong></span>' +
+    '<span class="score-chip">Верно: <strong>'+correct+'</strong></span>' +
+    '<span class="score-chip">Процент: <strong>'+Math.round(correct/answered*100)+'%</strong></span>';
+}
+
+// init
+renderSetup();
+
+</script>
+
+<script>
+// ── Цвета игроков
+const PLAYER_COLORS = ['#c0392b','#1a6faa','#27a660','#c8973a'];
+
+// ── Зоны: разделители и ярлыки
+const ZONE_DIVIDERS = [
+  { pct: 20, color: '#4A44B0' }, // между зонами 1→2
+  { pct: 40, color: '#962E18' }, // между зонами 2→3
+  { pct: 60, color: '#3A6C10' }, // между зонами 3→4
+  { pct: 80, color: '#834E0A' }, // между зонами 4→5
+];
+const ZONE_BADGE_COLORS = [
+  { bg:'#042C53', text:'#B8D4F0', label:'1–20<br>Москва' },
+  { bg:'#22205A', text:'#C8C6F2', label:'21–40<br>Ленинград' },
+  { bg:'#4A1B0C', text:'#F2C0B0', label:'41–60<br>Сталинград' },
+  { bg:'#163404', text:'#BCE09A', label:'61–80<br>Курск' },
+  { bg:'#3F2400', text:'#FAC878', label:'81–100<br>Берлин' },
+];
+
+// ── Патч renderBoard
+const _origRenderBoard = renderBoard;
+renderBoard = function() {
+  _origRenderBoard();
+  if (!game) return;
+
+  const board = document.getElementById('board');
+
+  // 1. Удаляем старые разделители и ярлыки
+  board.querySelectorAll('.zone-divider, .zone-label-badge').forEach(el => el.remove());
+
+  // 2. Добавляем горизонтальные разделители
+  ZONE_DIVIDERS.forEach(({ pct, color, label }) => {
+    const div = document.createElement('div');
+    div.className = 'zone-divider';
+    div.style.cssText = `bottom:${pct}%;background:${color};`;
+    board.appendChild(div);
+  });
+
+  // 3. Добавляем боковые ярлыки зон (5 штук)
+  ZONE_BADGE_COLORS.forEach((z, i) => {
+    const badge = document.createElement('div');
+    badge.className = 'zone-label-badge';
+    const pctBottom = i * 20 + 10; // Москва=10% снизу, Берлин=90% снизу
+    badge.style.cssText = `bottom:${pctBottom}%;background:${z.bg};color:${z.text};`;
+    badge.innerHTML = z.label.replace('\n','<br>');
+    board.appendChild(badge);
+  });
+
+  // 4. Цветные фишки с data-атрибутом
+  document.querySelectorAll('.tokens-on-cell').forEach(wrap => {
+    wrap.querySelectorAll('.token-chip').forEach(chip => {
+      const emoji = chip.textContent.trim();
+      const playerIdx = game.players.findIndex(p => p.token === emoji);
+      if (playerIdx !== -1) {
+        chip.setAttribute('data-player', playerIdx);
+        chip.style.background = PLAYER_COLORS[playerIdx];
+        chip.style.fontSize = '12px';
+      }
+    });
+  });
+};
+
+// ── Патч finishGame: добавляем подиум
+const _origFinishGame = finishGame;
+finishGame = function(winnerIdx) {
+  _origFinishGame(winnerIdx);
+  if (!game) return;
+
+  const sorted = game.players.slice().sort((a, b) => {
+    if (a.id === winnerIdx) return -1;
+    if (b.id === winnerIdx) return 1;
+    return (b.pos - a.pos) || (b.correct - a.correct);
+  });
+
+  // Победитель
+  const w = game.players[winnerIdx];
+  const winTitleEl = document.getElementById('winTitle');
+  winTitleEl.innerHTML = 'Победа! <span>' + escapeHtml(w.name) + '</span>';
+
+  // Подиум (до 3 игроков)
+  const podium = document.getElementById('winPodium');
+  if (podium) {
+    podium.innerHTML = '';
+    // Порядок подиума: 2-е место, 1-е, 3-е
+    const podiumOrder = sorted.length >= 3
+      ? [sorted[1], sorted[0], sorted[2]]
+      : sorted.length === 2
+        ? [sorted[1], sorted[0]]
+        : [sorted[0]];
+    const placeClass = sorted.length >= 3
+      ? ['p2', 'p1', 'p3']
+      : sorted.length === 2
+        ? ['p2', 'p1']
+        : ['p1'];
+    const rankLabel = ['2', '1', '3'];
+    const rankLabelSingle = ['1'];
+
+    podiumOrder.forEach((p, i) => {
+      const pIdx = game.players.indexOf(p);
+      const cls = placeClass[i];
+      const rank = sorted.length >= 3 ? rankLabel[i] : (sorted.length === 2 ? ['2','1'][i] : '1');
+      const div = document.createElement('div');
+      div.className = 'podium-place ' + cls;
+      div.innerHTML = `
+        <div class="podium-player-token" style="background:${PLAYER_COLORS[pIdx] || '#888'}">${p.token}</div>
+        <div class="podium-name">${escapeHtml(p.name)}</div>
+        <div class="podium-stat">✓${p.correct} · Кл.${p.pos}</div>
+        <div class="podium-block">${rank}</div>
+      `;
+      podium.appendChild(div);
+    });
+  }
+
+  // Полная таблица
+  const stats = document.getElementById('winStats');
+  if (stats) {
+    stats.innerHTML = '';
+    sorted.forEach((p, rank) => {
+      const pIdx = game.players.indexOf(p);
+      const row = document.createElement('div');
+      row.className = 'win-row' + (p.id === winnerIdx ? ' winner' : '');
+      const rankStr = rank === 0 ? '★' : (rank + 1) + '.';
+      row.innerHTML = `
+        <span class="wr-rank">${rankStr}</span>
+        <span class="wr-tok" style="background:${PLAYER_COLORS[pIdx] || '#888'}">${p.token}</span>
+        <span class="wr-name">${escapeHtml(p.name)}</span>
+        <span class="wr-stat">Кл. ${p.pos} · ✓${p.correct} · ✗${p.wrong}</span>
+      `;
+      stats.appendChild(row);
+    });
+  }
+};
+const _origRenderScoreboard = renderScoreboard;
+renderScoreboard = function() {
+  _origRenderScoreboard();
+  if (!game) return;
+  document.querySelectorAll('.score-card').forEach((card, i) => {
+    const color = PLAYER_COLORS[i] || '#888';
+    card.style.borderLeftWidth = '3px';
+    card.style.borderLeftColor = color;
+    const tok = card.querySelector('.s-tok');
+    if (tok) {
+      tok.style.width = '32px';
+      tok.style.height = '32px';
+      tok.style.borderRadius = '50%';
+      tok.style.display = 'flex';
+      tok.style.alignItems = 'center';
+      tok.style.justifyContent = 'center';
+      tok.style.background = color;
+      tok.style.fontSize = '16px';
+      tok.style.flexShrink = '0';
+      tok.style.boxShadow = '0 2px 8px rgba(0,0,0,0.35)';
+    }
+  });
+};
+</script>
+</body>
+</html>
